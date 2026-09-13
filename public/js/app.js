@@ -299,7 +299,7 @@ function renderProducts() {
           </div>
 
           <div class="product-pricing">
-            <span class="price-current">Rs. ${formatPKR(price)}</span>
+            <span class="price-current ${hasDiscount ? 'price-sale' : ''}">Rs. ${formatPKR(price)}</span>
             ${hasDiscount ? `<span class="price-original">Rs. ${formatPKR(product.retailPrice)}</span>` : ''}
             ${product.wholesalePrice ? `<span class="price-wholesale-tag">Wholesale: Rs. ${formatPKR(product.wholesalePrice)}</span>` : ''}
           </div>

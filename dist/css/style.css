@@ -9,37 +9,42 @@
   --bg-body: #ffffff;
   --bg-surface: #ffffff;
   --bg-ivory: #faf7f0;
-  --bg-pearl: #fdfbf7;
+  --bg-pearl: #fbfbfb;
+  --bg-light-grey: #f7f7f7;
   
   --color-gold: #c5a059;
   --color-gold-light: #dfb76c;
   --color-gold-dark: #9e7b37;
   --color-gold-gradient: linear-gradient(135deg, #b88d3e 0%, #c5a059 45%, #dfb76c 100%);
   --color-gold-subtle: rgba(197, 160, 89, 0.12);
-  --color-gold-glow: rgba(197, 160, 89, 0.28);
+  --color-gold-glow: rgba(197, 160, 89, 0.25);
   
-  --text-primary: #1a1714;
-  --text-secondary: #4a4742;
-  --text-muted: #827e77;
+  --color-sale-red: #b02a37;
+  --color-dark-couture: #111111;
+  --color-charcoal: #222222;
+  
+  --text-primary: #111111;
+  --text-secondary: #444444;
+  --text-muted: #777777;
   --text-light: #ffffff;
   --text-gold: #b38734;
 
-  --border-light: #ece7dc;
-  --border-subtle: #f4f0e6;
-  --border-gold: rgba(197, 160, 89, 0.45);
-  --border-gold-solid: #dfb76c;
+  --border-light: #ebebeb;
+  --border-subtle: #f0f0f0;
+  --border-gold: rgba(197, 160, 89, 0.4);
+  --border-gold-solid: #c5a059;
 
-  --font-heading: 'Cormorant Garamond', 'Belleza', Georgia, serif;
+  --font-heading: 'Cormorant Garamond', 'Belleza', 'Playfair Display', Georgia, serif;
   --font-ui: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
-  --shadow-sm: 0 2px 10px rgba(197, 160, 89, 0.08);
-  --shadow-md: 0 8px 24px rgba(197, 160, 89, 0.15);
-  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.08);
-  --shadow-gold: 0 4px 20px rgba(197, 160, 89, 0.35);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.12);
+  --shadow-gold: 0 4px 18px rgba(197, 160, 89, 0.35);
 
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 16px;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
   --radius-full: 9999px;
 
   --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -104,21 +109,20 @@ img {
 }
 
 /* ==========================================================================
-   1. ANNOUNCEMENT TOP BAR (ROYAL GOLD THEME)
+   1. ANNOUNCEMENT TOP BAR (ZAINAB CHOTTANI SLEEK BLACK COUTURE STYLE)
    ========================================================================== */
 .announcement-bar {
-  background: var(--color-gold-gradient);
+  background: #000000;
   color: #ffffff;
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 1px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 1.8px;
   text-transform: uppercase;
-  padding: 9px 16px;
+  padding: 8px 16px;
   overflow: hidden;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   position: relative;
   z-index: 110;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
 .announcement-inner {
@@ -133,13 +137,13 @@ img {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  animation: fadeIn 0.8s ease;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  animation: fadeIn 0.6s ease;
+  font-family: var(--font-ui);
 }
 
 .announcement-link {
   color: #ffffff;
-  font-weight: 700;
+  font-weight: 600;
   margin-left: 8px;
   text-decoration: underline;
 }
@@ -147,40 +151,40 @@ img {
 .announcement-links {
   display: flex;
   gap: 16px;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
 }
 
 .announcement-links a {
   color: #ffffff;
-  font-weight: 600;
+  font-weight: 500;
+  letter-spacing: 1px;
 }
 
 .announcement-links a:hover {
-  opacity: 0.85;
+  color: var(--color-gold-light);
 }
 
 /* ==========================================================================
-   2. STICKY HEADER & NAVBAR (CRISP WHITE WITH GOLD BORDER)
+   2. STICKY HEADER & NAVBAR (ZAINAB CHOTTANI SIGNATURE MINIMALIST LUXURY)
    ========================================================================== */
 .main-header {
-  background-color: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(12px);
+  background-color: #ffffff;
   position: sticky;
   top: 0;
   z-index: 100;
-  border-bottom: 2px solid var(--border-gold-solid);
+  border-bottom: 1px solid #e8e8e8;
   transition: box-shadow var(--transition-normal);
 }
 
 .main-header.scrolled {
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
 }
 
 .header-inner {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  padding: 16px 0;
+  padding: 14px 0;
 }
 
 .header-left {
@@ -192,21 +196,20 @@ img {
 .btn-hamburger {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.82rem;
+  gap: 10px;
+  font-size: 0.78rem;
   font-weight: 600;
-  letter-spacing: 1.5px;
+  letter-spacing: 2px;
   text-transform: uppercase;
-  color: var(--text-primary);
-  padding: 6px 12px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-light);
-  background: #ffffff;
+  color: #111111;
+  padding: 6px 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
 }
 
 .btn-hamburger:hover {
-  border-color: var(--color-gold);
-  color: var(--color-gold-dark);
+  color: var(--color-gold);
 }
 
 .hamburger-icon {
@@ -220,10 +223,9 @@ img {
 
 .hamburger-icon span {
   display: block;
-  height: 2px;
+  height: 1.5px;
   width: 100%;
   background-color: currentColor;
-  border-radius: 1px;
 }
 
 .brand-logo-wrap {
@@ -232,28 +234,29 @@ img {
 
 .brand-title {
   font-family: var(--font-heading);
-  font-size: 1.95rem;
-  font-weight: 700;
-  letter-spacing: 3.5px;
+  font-size: 2.15rem;
+  font-weight: 600;
+  letter-spacing: 4px;
   line-height: 1;
   text-transform: uppercase;
-  color: var(--text-primary);
+  color: #111111;
   position: relative;
   display: inline-block;
 }
 
 .brand-title span {
-  color: var(--color-gold-dark);
+  color: #111111;
+  font-weight: 300;
 }
 
 .brand-tagline {
   display: block;
   font-family: var(--font-ui);
-  font-size: 0.65rem;
+  font-size: 0.62rem;
+  font-weight: 600;
   letter-spacing: 2.5px;
   text-transform: uppercase;
-  color: var(--color-gold-dark);
-  font-weight: 600;
+  color: #777777;
   margin-top: 4px;
 }
 
@@ -310,9 +313,9 @@ img {
   color: var(--color-gold-dark);
 }
 
-/* Category Navigation Bar (Desktop) */
+/* Category Navigation Bar (Zainab Chottani Desktop Horizontal Menu) */
 .category-nav-bar {
-  border-top: 1px solid var(--border-subtle);
+  border-top: 1px solid #f0f0f0;
   background: #ffffff;
 }
 
@@ -320,10 +323,10 @@ img {
   display: flex;
   justify-content: center;
   list-style: none;
-  gap: 28px;
+  gap: 32px;
   overflow-x: auto;
   scrollbar-width: none;
-  padding: 10px 0;
+  padding: 11px 0;
 }
 
 .category-nav-list::-webkit-scrollbar {
@@ -331,19 +334,24 @@ img {
 }
 
 .category-nav-item a {
-  font-size: 0.8rem;
+  font-size: 0.76rem;
   font-weight: 600;
-  letter-spacing: 1px;
+  letter-spacing: 1.6px;
   text-transform: uppercase;
-  color: var(--text-secondary);
-  padding: 4px 0;
+  color: #222222;
+  padding: 6px 0;
   position: relative;
   white-space: nowrap;
+  transition: color var(--transition-fast);
 }
 
-.category-nav-item a:hover,
-.category-nav-item.active a {
+.category-nav-item a:hover {
   color: var(--color-gold-dark);
+}
+
+.category-nav-item.active a {
+  color: #111111;
+  font-weight: 700;
 }
 
 .category-nav-item.active a::after {
@@ -353,11 +361,12 @@ img {
   left: 0;
   width: 100%;
   height: 2px;
-  background-color: var(--color-gold);
+  background-color: #111111;
 }
 
 .category-nav-item.sale-link a {
-  color: #c92a2a;
+  color: #b02a37;
+  font-weight: 700;
 }
 
 /* ==========================================================================
@@ -449,22 +458,24 @@ img {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: var(--color-gold-gradient);
-  color: #121414;
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 1.5px;
+  background: #111111;
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 2px;
   text-transform: uppercase;
-  padding: 14px 28px;
+  padding: 14px 30px;
   border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-gold);
-  border: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  border: 1px solid #111111;
+  transition: all var(--transition-fast);
 }
 
 .btn-luxury-gold:hover {
+  background: #2a2a2a;
+  color: #ffffff;
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(197, 160, 89, 0.45);
-  color: #000000;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
 }
 
 .btn-luxury-outline {
@@ -473,21 +484,22 @@ img {
   justify-content: center;
   gap: 8px;
   background: #ffffff;
-  color: var(--text-primary);
-  border: 1.5px solid var(--border-gold-solid);
-  font-size: 0.8rem;
+  color: #111111;
+  border: 1.5px solid #111111;
+  font-size: 0.78rem;
   font-weight: 600;
-  letter-spacing: 1.5px;
+  letter-spacing: 2px;
   text-transform: uppercase;
-  padding: 14px 28px;
+  padding: 14px 30px;
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
 }
 
 .btn-luxury-outline:hover {
-  border-color: var(--color-gold);
-  background: var(--bg-ivory);
-  color: var(--color-gold-dark);
+  background: #111111;
+  color: #ffffff;
+  border-color: #111111;
 }
 
 .hero-nav {
@@ -502,7 +514,7 @@ img {
 .hero-dot {
   width: 12px;
   height: 4px;
-  background: rgba(197, 160, 89, 0.35);
+  background: rgba(17, 17, 17, 0.25);
   border-radius: 2px;
   transition: all 0.3s ease;
   cursor: pointer;
@@ -510,43 +522,44 @@ img {
 
 .hero-dot.active {
   width: 32px;
-  background: var(--color-gold-dark);
+  background: #111111;
 }
 
 /* ==========================================================================
-   4. CURATED COLLECTIONS GRID
+   4. CURATED COLLECTIONS GRID (ZAINAB CHOTTANI EDITORIAL TILES)
    ========================================================================== */
 .section-padding {
-  padding: 60px 0;
+  padding: 64px 0;
 }
 
 .section-header {
   text-align: center;
   max-width: 680px;
-  margin: 0 auto 40px auto;
+  margin: 0 auto 36px auto;
 }
 
 .section-subtitle {
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 2px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 2.5px;
   text-transform: uppercase;
-  color: var(--color-gold-dark);
+  color: #777777;
   margin-bottom: 8px;
 }
 
 .section-title {
-  font-size: 2.3rem;
-  letter-spacing: 1.5px;
-  color: var(--text-primary);
-  line-height: 1.2;
+  font-size: 2.2rem;
+  letter-spacing: 2px;
+  color: #111111;
+  line-height: 1.25;
+  font-weight: 600;
 }
 
 .section-divider {
-  width: 60px;
-  height: 2px;
-  background: var(--color-gold-gradient);
-  margin: 14px auto 0 auto;
+  width: 48px;
+  height: 1.5px;
+  background: #111111;
+  margin: 12px auto 0 auto;
 }
 
 .collection-grid {
@@ -558,53 +571,65 @@ img {
 .collection-card {
   position: relative;
   background: #ffffff;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  border: 1px solid #ebebeb;
   overflow: hidden;
-  padding: 24px 20px;
+  padding: 32px 20px 24px 20px;
   text-align: center;
   transition: all var(--transition-normal);
   cursor: pointer;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .collection-card:hover {
   transform: translateY(-4px);
-  border-color: var(--color-gold-dark);
-  box-shadow: var(--shadow-md);
+  border-color: #111111;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
 }
 
 .collection-emoji-art {
   font-size: 2.8rem;
-  height: 80px;
+  height: 84px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-ivory);
+  background: #fbfbfb;
   border-radius: 50%;
-  width: 80px;
-  margin: 0 auto 16px auto;
-  border: 1px solid var(--border-gold);
+  width: 84px;
+  margin: 0 auto 18px auto;
+  border: 1px solid #eeeeee;
   transition: transform var(--transition-normal);
 }
 
 .collection-card:hover .collection-emoji-art {
-  transform: scale(1.1);
-  background: var(--color-gold-subtle);
+  transform: scale(1.08);
+  background: #f5f5f5;
+  border-color: #111111;
 }
 
 .collection-name {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
+  letter-spacing: 1px;
   margin-bottom: 6px;
-  color: var(--text-primary);
+  color: #111111;
+  font-weight: 600;
 }
 
 .collection-meta {
-  font-size: 0.75rem;
-  color: var(--color-gold-dark);
+  font-size: 0.72rem;
+  color: #777777;
   text-transform: uppercase;
   font-weight: 600;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
+  transition: color var(--transition-fast);
+}
+
+.collection-card:hover .collection-meta {
+  color: #111111;
 }
 
 /* ==========================================================================
@@ -748,19 +773,19 @@ img {
 }
 
 .badge-sale {
-  background: #c92a2a;
+  background: #b02a37;
   color: #ffffff;
 }
 
 .badge-festive {
   background: #ffffff;
-  color: var(--color-gold-dark);
-  border: 1px solid var(--border-gold-solid);
+  color: #111111;
+  border: 1px solid #111111;
   box-shadow: 0 1px 4px rgba(0,0,0,0.06);
 }
 
 .badge-stock-alert {
-  background: #d97706;
+  background: #2b2b2b;
   color: #ffffff;
 }
 
@@ -771,22 +796,23 @@ img {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.92);
-  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.95);
+  color: #555555;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   z-index: 3;
-  border: 1px solid var(--border-light);
+  border: 1px solid #ebebeb;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   transition: all var(--transition-fast);
 }
 
 .wishlist-btn:hover,
 .wishlist-btn.active {
-  color: #c92a2a;
+  color: #b02a37;
   background: #ffffff;
-  border-color: #c92a2a;
+  border-color: #b02a37;
 }
 
 /* Quick Actions Overlay */
@@ -796,7 +822,7 @@ img {
   left: 0;
   width: 100%;
   padding: 10px;
-  background: linear-gradient(to top, rgba(255, 255, 255, 0.92) 0%, transparent 100%);
+  background: linear-gradient(to top, rgba(255, 255, 255, 0.95) 0%, transparent 100%);
   display: flex;
   gap: 8px;
   transform: translateY(100%);
@@ -813,21 +839,22 @@ img {
 .btn-card-quickview {
   flex: 1;
   background: #ffffff;
-  color: var(--text-primary);
+  color: #111111;
   font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 1px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
-  padding: 7px 10px;
+  padding: 8px 10px;
   border-radius: var(--radius-sm);
   text-align: center;
-  border: 1px solid var(--border-gold-solid);
+  border: 1px solid #111111;
   box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
 }
 
 .btn-card-quickview:hover {
-  background: var(--color-gold-gradient);
-  color: #121414;
+  background: #111111;
+  color: #ffffff;
 }
 
 .product-details {
@@ -841,18 +868,20 @@ img {
   display: flex;
   justify-content: space-between;
   font-size: 0.68rem;
-  color: var(--color-gold-dark);
+  color: #777777;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.2px;
   margin-bottom: 5px;
 }
 
 .product-name {
   font-family: var(--font-heading);
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   line-height: 1.3;
-  color: var(--text-primary);
+  color: #111111;
+  font-weight: 600;
+  letter-spacing: 0.3px;
   margin-bottom: 6px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -860,15 +889,16 @@ img {
   overflow: hidden;
   height: 40px;
   cursor: pointer;
+  transition: color var(--transition-fast);
 }
 
 .product-name:hover {
-  color: var(--color-gold-dark);
+  color: #555555;
 }
 
 .product-fabric-meta {
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: #777777;
   margin-bottom: 10px;
   display: flex;
   align-items: center;
@@ -885,26 +915,32 @@ img {
 }
 
 .price-current {
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #111111;
+  font-family: var(--font-ui);
+}
+
+.price-current.price-sale {
+  color: #b02a37;
 }
 
 .price-original {
-  font-size: 0.82rem;
-  color: var(--text-muted);
+  font-size: 0.8rem;
+  color: #888888;
   text-decoration: line-through;
 }
 
 .price-wholesale-tag {
-  font-size: 0.68rem;
-  background: var(--bg-ivory);
-  color: var(--color-gold-dark);
-  border: 1px solid var(--border-gold);
+  font-size: 0.66rem;
+  background: #f7f7f7;
+  color: #222222;
+  border: 1px solid #e0e0e0;
   padding: 2px 6px;
-  border-radius: 3px;
+  border-radius: 2px;
   margin-left: auto;
-  font-weight: 700;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 .product-btn-group {
@@ -914,12 +950,12 @@ img {
 }
 
 .btn-card-cart {
-  background: #ffffff;
-  color: var(--text-primary);
-  border: 1.5px solid var(--border-gold-solid);
+  background: #111111;
+  color: #ffffff;
+  border: 1px solid #111111;
   font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.5px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
   padding: 8px 6px;
   border-radius: var(--radius-sm);
@@ -927,18 +963,21 @@ img {
   align-items: center;
   justify-content: center;
   gap: 4px;
+  transition: all var(--transition-fast);
 }
 
 .btn-card-cart:hover {
-  background: var(--color-gold-gradient);
-  color: #121414;
+  background: #333333;
+  border-color: #333333;
+  color: #ffffff;
 }
 
 .btn-card-whatsapp {
   background: #25d366;
   color: #ffffff;
+  border: 1px solid #25d366;
   font-size: 0.72rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.5px;
   text-transform: uppercase;
   padding: 8px 6px;
@@ -947,10 +986,12 @@ img {
   align-items: center;
   justify-content: center;
   gap: 4px;
+  transition: all var(--transition-fast);
 }
 
 .btn-card-whatsapp:hover {
   background: #1ebc59;
+  border-color: #1ebc59;
 }
 
 /* ==========================================================================
@@ -1158,14 +1199,14 @@ img {
 }
 
 /* ==========================================================================
-   8. FOOTER (WARM IVORY & GOLDEN ACCENTS)
+   8. FOOTER (ZAINAB CHOTTANI SIGNATURE MINIMALIST GREY)
    ========================================================================== */
 .main-footer {
-  background: #fbf9f4;
-  color: #5a5750;
+  background: #f7f7f7;
+  color: #555555;
   font-size: 0.82rem;
-  padding: 56px 0 24px 0;
-  border-top: 2px solid var(--border-gold-solid);
+  padding: 60px 0 26px 0;
+  border-top: 1px solid #e8e8e8;
 }
 
 .footer-grid {
@@ -1177,23 +1218,25 @@ img {
 
 .footer-brand-title {
   font-family: var(--font-heading);
-  font-size: 1.8rem;
-  color: var(--text-primary);
-  letter-spacing: 2px;
+  font-size: 1.65rem;
+  color: #111111;
+  letter-spacing: 3px;
+  font-weight: 600;
   margin-bottom: 12px;
 }
 
 .footer-brand-desc {
   line-height: 1.7;
   margin-bottom: 16px;
+  color: #666666;
 }
 
 .footer-col-title {
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 1.5px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 2px;
   text-transform: uppercase;
-  color: var(--color-gold-dark);
+  color: #111111;
   margin-bottom: 18px;
   position: relative;
   padding-bottom: 8px;
@@ -1204,9 +1247,9 @@ img {
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 28px;
-  height: 2px;
-  background: var(--color-gold);
+  width: 24px;
+  height: 1.5px;
+  background: #111111;
 }
 
 .footer-links {
@@ -1216,19 +1259,26 @@ img {
   gap: 10px;
 }
 
+.footer-links a {
+  color: #666666;
+  font-size: 0.82rem;
+  transition: all var(--transition-fast);
+}
+
 .footer-links a:hover {
-  color: var(--color-gold-dark);
+  color: #111111;
   transform: translateX(3px);
   display: inline-block;
 }
 
 .footer-bottom {
-  border-top: 1px solid var(--border-light);
+  border-top: 1px solid #e8e8e8;
   padding-top: 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.75rem;
+  font-size: 0.74rem;
+  color: #888888;
 }
 
 /* ==========================================================================
