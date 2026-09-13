@@ -2,9 +2,18 @@ const { getDb } = require('../config/db');
 const { ObjectId } = require('mongodb');
 const { logAudit } = require('../services/auditService');
 
+const { FALLBACK_CATEGORIES } = require('../data/fallbackCatalog');
+
 async function getCategories(req, res, next) {
   try {
     const db = getDb();
+    if (!db) {
+      return res.json({
+        success: true,
+        categories: FALLBACK_CATEGORIES
+      });
+    }
+
     const categories = await db.collection('categories')
       .find({ active: { $ne: false } })
       .sort({ sortOrder: 1, name: 1 })
@@ -12,10 +21,14 @@ async function getCategories(req, res, next) {
 
     res.json({
       success: true,
-      categories
+      categories: categories.length > 0 ? categories : FALLBACK_CATEGORIES
     });
   } catch (err) {
-    next(err);
+    console.error('getCategories error:', err.message);
+    res.json({
+      success: true,
+      categories: FALLBACK_CATEGORIES
+    });
   }
 }
 

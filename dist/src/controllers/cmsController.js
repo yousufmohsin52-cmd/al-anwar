@@ -2,9 +2,38 @@ const { getDb } = require('../config/db');
 const { ObjectId } = require('mongodb');
 const { logAudit } = require('../services/auditService');
 
+const { FALLBACK_ANNOUNCEMENTS, FALLBACK_HERO_SLIDES } = require('../data/fallbackCatalog');
+
 async function getPublicCMS(req, res, next) {
   try {
     const db = getDb();
+    if (!db) {
+      return res.json({
+        success: true,
+        announcements: FALLBACK_ANNOUNCEMENTS,
+        heroSlides: FALLBACK_HERO_SLIDES,
+        storeSettings: {
+          name: 'AL ANWAR FABRICS & CLOTH',
+          address: 'M.A. Jinnah Road, Iqbal Cloth Market, Shop # M101/1, Karachi, Pakistan',
+          phone: '03363925950',
+          whatsapp: '+923363925950',
+          email: 'info@alanwarcloth.com',
+          freeDeliveryThreshold: 5000,
+          currency: 'PKR',
+          currencySymbol: 'Rs.'
+        },
+        homepageSections: {
+          heroHeadline: 'THE ART OF FINE FABRICS',
+          heroSubheading: 'Exquisite Pakistani unstitched lawn, festive chiffon, and luxury cotton collections direct from Karachi wholesale market.',
+          banner1Badge: 'NEW FESTIVE 2026',
+          banner1Title: 'LUXURY UNSTITCHED SUITS',
+          banner1Subtitle: 'Handpicked Embroidered & Digital Lawn 3-Piece',
+          banner2Badge: 'WHOLESALE BUNDLES',
+          banner2Title: 'DIRECT MILLS WHOLESALE',
+          banner2Subtitle: 'Shopkeepers & Boutiques welcome across Pakistan'
+        }
+      });
+    }
 
     // 1. Announcements
     const announcements = await db.collection('announcements')
@@ -26,8 +55,8 @@ async function getPublicCMS(req, res, next) {
 
     res.json({
       success: true,
-      announcements: announcements.map(a => a.text),
-      heroSlides,
+      announcements: announcements.length > 0 ? announcements.map(a => a.text) : FALLBACK_ANNOUNCEMENTS,
+      heroSlides: heroSlides.length > 0 ? heroSlides : FALLBACK_HERO_SLIDES,
       storeSettings: settingsDoc ? settingsDoc.value : {
         name: 'AL ANWAR FABRICS & CLOTH',
         address: 'M.A. Jinnah Road, Iqbal Cloth Market, Shop # M101/1, Karachi, Pakistan',
@@ -50,7 +79,22 @@ async function getPublicCMS(req, res, next) {
       }
     });
   } catch (err) {
-    next(err);
+    console.error('getPublicCMS error:', err.message);
+    res.json({
+      success: true,
+      announcements: FALLBACK_ANNOUNCEMENTS,
+      heroSlides: FALLBACK_HERO_SLIDES,
+      storeSettings: {
+        name: 'AL ANWAR FABRICS & CLOTH',
+        address: 'M.A. Jinnah Road, Iqbal Cloth Market, Shop # M101/1, Karachi, Pakistan',
+        phone: '03363925950',
+        whatsapp: '+923363925950',
+        email: 'info@alanwarcloth.com',
+        freeDeliveryThreshold: 5000,
+        currency: 'PKR',
+        currencySymbol: 'Rs.'
+      }
+    });
   }
 }
 

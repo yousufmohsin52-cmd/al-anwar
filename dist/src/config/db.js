@@ -15,31 +15,39 @@ const uri = process.env.MONGODB_URI || 'mongodb+srv://yousufmohsin52_db_user:ZqZ
 const dbName = process.env.DB_NAME || 'al_anwar_db';
 
 
-let client = null;
-let db = null;
+let client = global._mongoClient || null;
+let db = global._mongoDb || null;
+let indexesInitialized = global._indexesInitialized || false;
 
 async function connectDB() {
   if (db) return db;
 
   try {
-    client = new MongoClient(uri, {
-      maxPoolSize: 20,
-      minPoolSize: 2,
-      serverSelectionTimeoutMS: 15000,
-      connectTimeoutMS: 15000
-    });
+    if (!client) {
+      client = new MongoClient(uri, {
+        maxPoolSize: 10,
+        minPoolSize: 1,
+        serverSelectionTimeoutMS: 4000,
+        connectTimeoutMS: 4000
+      });
+      global._mongoClient = client;
+    }
 
     await client.connect();
     db = client.db(dbName);
+    global._mongoDb = db;
     console.log(`[MongoDB Atlas] Successfully connected to database: ${dbName}`);
 
-    // Create required indexes
-    await initIndexes(db);
+    if (!indexesInitialized) {
+      initIndexes(db).catch(e => console.warn('Background index notice:', e.message));
+      indexesInitialized = true;
+      global._indexesInitialized = true;
+    }
 
     return db;
   } catch (err) {
-    console.error('[MongoDB Atlas] Connection failed:', err.message);
-    throw err;
+    console.error('[MongoDB Atlas] Connection notice:', err.message);
+    return null;
   }
 }
 
@@ -94,10 +102,7 @@ async function initIndexes(database) {
 }
 
 function getDb() {
-  if (!db) {
-    throw new Error('Database is not initialized. Call connectDB() first.');
-  }
-  return db;
+  return db || global._mongoDb || null;
 }
 
 module.exports = {

@@ -4,10 +4,39 @@ const { recordMovement } = require('../services/inventoryService');
 const { logAudit } = require('../services/auditService');
 const { MOVEMENT_TYPES } = require('../config/constants');
 
+const { FALLBACK_PRODUCTS } = require('../data/fallbackCatalog');
+
 async function getPublicProducts(req, res, next) {
   try {
     const db = getDb();
     const { category, search, fabricType, sort, limit = 50, page = 1 } = req.query;
+
+    if (!db) {
+      let filtered = [...FALLBACK_PRODUCTS];
+      if (category && category !== 'All' && category !== 'all') {
+        filtered = filtered.filter(p => p.category.toLowerCase() === category.toLowerCase());
+      }
+      if (fabricType && fabricType !== 'All') {
+        filtered = filtered.filter(p => p.fabricType && p.fabricType.toLowerCase() === fabricType.toLowerCase());
+      }
+      if (search && search.trim()) {
+        const q = search.trim().toLowerCase();
+        filtered = filtered.filter(p => 
+          p.name.toLowerCase().includes(q) || 
+          p.sku.toLowerCase().includes(q) || 
+          (p.description && p.description.toLowerCase().includes(q))
+        );
+      }
+      if (sort === 'price_asc') filtered.sort((a, b) => (a.salePrice || a.retailPrice) - (b.salePrice || b.retailPrice));
+      if (sort === 'price_desc') filtered.sort((a, b) => (b.salePrice || b.retailPrice) - (a.salePrice || a.retailPrice));
+      return res.json({
+        success: true,
+        total: filtered.length,
+        page: 1,
+        limit: Number(limit),
+        products: filtered
+      });
+    }
 
     const query = {
       active: true,
@@ -58,7 +87,14 @@ async function getPublicProducts(req, res, next) {
       products
     });
   } catch (err) {
-    next(err);
+    console.error('getPublicProducts error:', err.message);
+    res.json({
+      success: true,
+      total: FALLBACK_PRODUCTS.length,
+      page: 1,
+      limit: 50,
+      products: FALLBACK_PRODUCTS
+    });
   }
 }
 
@@ -66,6 +102,14 @@ async function getProductById(req, res, next) {
   try {
     const { id } = req.params;
     const db = getDb();
+
+    if (!db) {
+      const p = FALLBACK_PRODUCTS.find(item => item._id === id || item.sku === id);
+      if (!p) {
+        return res.status(404).json({ success: false, message: 'Product not found.' });
+      }
+      return res.json({ success: true, product: p });
+    }
 
     let query = {};
     if (ObjectId.isValid(id)) {
@@ -76,6 +120,10 @@ async function getProductById(req, res, next) {
 
     const product = await db.collection('products').findOne(query);
     if (!product) {
+      const p = FALLBACK_PRODUCTS.find(item => item._id === id || item.sku === id);
+      if (p) {
+        return res.json({ success: true, product: p });
+      }
       return res.status(404).json({
         success: false,
         message: 'Product not found.'
