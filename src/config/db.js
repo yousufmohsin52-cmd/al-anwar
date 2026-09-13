@@ -2,20 +2,18 @@ const dns = require('dns');
 const { MongoClient } = require('mongodb');
 require('dotenv').config();
 
-// Fix Windows SRV DNS resolution for MongoDB Atlas
-try {
-  dns.setServers(['8.8.8.8', '1.1.1.1', '8.8.4.4']);
-} catch (e) {
-  console.warn('DNS server configuration warning:', e.message);
+// Fix Windows SRV DNS resolution for MongoDB Atlas only on Windows
+if (process.platform === 'win32') {
+  try {
+    dns.setServers(['8.8.8.8', '1.1.1.1', '8.8.4.4']);
+  } catch (e) {
+    console.warn('DNS server configuration warning:', e.message);
+  }
 }
 
-const uri = process.env.MONGODB_URI;
+const uri = process.env.MONGODB_URI || 'mongodb+srv://yousufmohsin52_db_user:ZqZ6cP0Wyjk8GOej@cluster0.khoadig.mongodb.net/?appName=Cluster0';
 const dbName = process.env.DB_NAME || 'al_anwar_db';
 
-if (!uri) {
-  console.error('FATAL: MONGODB_URI is not defined in environment variables.');
-  process.exit(1);
-}
 
 let client = null;
 let db = null;

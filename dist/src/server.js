@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
@@ -12,11 +13,13 @@ const errorHandler = require('./middleware/errorHandler');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Security middleware
-app.use(helmet({
-  contentSecurityPolicy: false, // Allows inline styles & external fonts/Tesseract CDN
-  crossOriginEmbedderPolicy: false
-}));
+// Security & CORS middleware
+if (!process.env.VERCEL) {
+  app.use(helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false
+  }));
+}
 
 app.use(cors({
   origin: '*',
@@ -24,17 +27,33 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// Rate limiting on login to protect against brute force
-const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 mins
-  max: 20, // 20 attempts
-  message: { success: false, message: 'Too many login attempts. Please try again after 15 minutes.' }
-});
-app.use('/api/auth/login', loginLimiter);
+// Rate limiting on login (standalone server only)
+if (!process.env.VERCEL) {
+  const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 20,
+    message: { success: false, message: 'Too many login attempts. Please try again after 15 minutes.' }
+  });
+  app.use('/api/auth/login', loginLimiter);
+}
 
 // Body parsing
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Ensure database connection for incoming requests (Vercel Serverless & Local)
+let isDbConnected = false;
+app.use(async (req, res, next) => {
+  if (!isDbConnected) {
+    try {
+      await connectDB();
+      isDbConnected = true;
+    } catch (err) {
+      console.error('[MongoDB Atlas Connection Notice]:', err.message);
+    }
+  }
+  next();
+});
 
 // Static frontend files
 app.use(express.static(path.join(__dirname, '../public')));
@@ -45,7 +64,11 @@ app.use('/api', apiRouter);
 
 // Frontend SPA routing helpers
 app.get('/admin', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/admin.html'));
+  const adminPath = path.join(__dirname, '../public/admin.html');
+  if (fs.existsSync(adminPath)) {
+    return res.sendFile(adminPath);
+  }
+  res.redirect('/admin.html');
 });
 
 app.use((req, res) => {
@@ -53,7 +76,11 @@ app.use((req, res) => {
   if (req.path.startsWith('/api')) {
     return res.status(404).json({ success: false, message: 'API endpoint not found.' });
   }
-  res.sendFile(path.join(__dirname, '../public/index.html'));
+  const indexPath = path.join(__dirname, '../public/index.html');
+  if (fs.existsSync(indexPath)) {
+    return res.sendFile(indexPath);
+  }
+  res.status(404).send('Not Found');
 });
 
 // Error handling middleware
