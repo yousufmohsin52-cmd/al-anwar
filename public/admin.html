@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AL ANWAR FABRICS & CLOTH | Enterprise ERP & Accounting Portal</title>
+  <link rel="stylesheet" href="/css/admin.css">
+  <!-- Tesseract.js for Client-Side Bill Photo OCR -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+</head>
+<body>
+
+  <!-- ========================================================================
+       1. LOGIN MODAL OVERLAY (ROLE-BASED AUTH)
+       ======================================================================== -->
+  <div class="login-modal-wrapper" id="loginModal">
+    <div class="login-card">
+      <div class="login-brand-logo">AL ANWAR <span>FABRICS</span></div>
+      <div class="login-tagline">Shop Management & Accountant ERP</div>
+
+      <!-- Demo Credentials Helper -->
+      <div class="demo-credentials-box">
+        <strong>⚡ Quick Demo Login Accounts:</strong>
+        <div class="demo-role-pills">
+          <button type="button" class="demo-pill" onclick="fillDemoCredentials('admin', 'admin123')">👑 Owner</button>
+          <button type="button" class="demo-pill" onclick="fillDemoCredentials('accountant', 'acc123')">📊 Accountant</button>
+          <button type="button" class="demo-pill" onclick="fillDemoCredentials('sales', 'sales123')">🛍️ Sales Staff</button>
+          <button type="button" class="demo-pill" onclick="fillDemoCredentials('inventory', 'inv123')">📦 Inventory</button>
+        </div>
+      </div>
+
+      <form onsubmit="handleLogin(event)">
+        <div style="margin-bottom: 16px; text-align: left;">
+          <label style="display:block; font-size: 0.75rem; font-weight: 600; color: var(--erp-secondary); margin-bottom: 6px; text-transform: uppercase;">Username / Email</label>
+          <input type="text" id="loginUsername" class="form-control-erp" placeholder="e.g. admin" required>
+        </div>
+        <div style="margin-bottom: 20px; text-align: left;">
+          <label style="display:block; font-size: 0.75rem; font-weight: 600; color: var(--erp-secondary); margin-bottom: 6px; text-transform: uppercase;">Password</label>
+          <input type="password" id="loginPassword" class="form-control-erp" placeholder="••••••••" required>
+        </div>
+
+        <div id="loginError" style="color: #c92a2a; font-size: 0.8rem; margin-bottom: 14px; display: none;"></div>
+
+        <button type="submit" class="btn-erp-action btn-erp-gold" style="width: 100%; justify-content: center; padding: 12px;">
+          SIGN IN TO ERP PORTAL →
+        </button>
+      </form>
+
+      <div style="margin-top: 20px; font-size: 0.75rem; color: var(--erp-muted);">
+        <a href="/" target="_blank" style="text-decoration: underline;">← Back to Customer Website</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       2. MAIN APP SHELL
+       ======================================================================== -->
+  <!-- Backdrop overlay for mobile sidebar drawer -->
+  <div class="erp-sidebar-overlay" id="adminSidebarOverlay" onclick="toggleAdminSidebar(false)"></div>
+
+  <div class="erp-container">
+    <!-- Sidebar Navigation -->
+    <aside class="erp-sidebar">
+      <div class="sidebar-header">
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+          <div>
+            <div class="sidebar-brand">AL ANWAR <span>CLOTH</span></div>
+            <div class="sidebar-shop-info">Iqbal Cloth Market, Shop # M101/1</div>
+          </div>
+          <button class="btn-sidebar-close" onclick="toggleAdminSidebar(false)" aria-label="Close Menu">✕</button>
+        </div>
+      </div>
+
+      <ul class="sidebar-nav">
+        <li class="nav-section-title">Core Accounting</li>
+        <li><button class="nav-item-btn active" data-tab="dashboard" onclick="switchTab('dashboard')"><span class="nav-icon">📊</span> Dashboard & KPIs</button></li>
+        <li><button class="nav-item-btn" data-tab="sales" onclick="switchTab('sales')"><span class="nav-icon">🧾</span> Sales & Hisaab Kitaab</button></li>
+        <li><button class="nav-item-btn" data-tab="ocr" onclick="switchTab('ocr')"><span class="nav-icon">📸</span> Bill Scanner (OCR)</button></li>
+        <li><button class="nav-item-btn" data-tab="expenses" onclick="switchTab('expenses')"><span class="nav-icon">💸</span> Shop Expenses</button></li>
+        <li><button class="nav-item-btn" data-tab="pl" onclick="switchTab('pl')"><span class="nav-icon">📈</span> Profit & Loss (P&L)</button></li>
+        <li><button class="nav-item-btn" data-tab="reconciliation" onclick="switchTab('reconciliation')"><span class="nav-icon">🏦</span> Cash / Bank Recon</button></li>
+
+        <li class="nav-section-title">Trade & Inventory</li>
+        <li><button class="nav-item-btn" data-tab="products" onclick="switchTab('products')"><span class="nav-icon">👗</span> Products & Fabrics</button></li>
+        <li><button class="nav-item-btn" data-tab="inventory" onclick="switchTab('inventory')"><span class="nav-icon">📦</span> Stock & Valuation</button></li>
+        <li><button class="nav-item-btn" data-tab="purchases" onclick="switchTab('purchases')"><span class="nav-icon">📥</span> Purchases (Stock-In)</button></li>
+        <li><button class="nav-item-btn" data-tab="customers" onclick="switchTab('customers')"><span class="nav-icon">👥</span> Customer Udhaar Ledger</button></li>
+        <li><button class="nav-item-btn" data-tab="suppliers" onclick="switchTab('suppliers')"><span class="nav-icon">🏭</span> Supplier / Mill Ledger</button></li>
+
+        <li class="nav-section-title">System & Reports</li>
+        <li><button class="nav-item-btn" data-tab="reports" onclick="switchTab('reports')"><span class="nav-icon">📄</span> Report Center (CSV)</button></li>
+        <li><button class="nav-item-btn" data-tab="cms" onclick="switchTab('cms')"><span class="nav-icon">🌐</span> Website CMS & Banners</button></li>
+        <li><a href="/" target="_blank" class="nav-item-btn" style="color: #64748b;"><span class="nav-icon">🛒</span> Open Storefront ↗</a></li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div class="user-profile-widget">
+          <div class="user-avatar" id="topbarUserAvatar">A</div>
+          <div>
+            <div class="user-info-text" id="topbarUserName">Yousuf Mohsin</div>
+            <span class="role-badge" id="topbarUserRole">Super Admin</span>
+          </div>
+        </div>
+        <button class="btn-sidebar-logout" onclick="handleLogout()" title="Logout from ERP">
+          🚪 <span>Logout</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="erp-main">
+      <!-- Top App Bar (WordPress / Mobile Admin Style) -->
+      <header class="erp-topbar">
+        <div class="topbar-left">
+          <!-- Mobile Hamburger Menu Button -->
+          <button class="btn-admin-hamburger" id="adminHamburgerBtn" onclick="toggleAdminSidebar(true)" aria-label="Open Menu">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+          </button>
+
+          <div class="topbar-title-wrap">
+            <span class="topbar-mobile-logo">AL ANWAR</span>
+            <h1 class="page-title" id="activePageTitle">Shop Overview & Hisaab Kitaab</h1>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Date Filter (for Dashboard & Reports) -->
+          <div class="date-filter-group">
+            <button class="date-btn active" data-period="today" onclick="setDashboardPeriod('today')">Today</button>
+            <button class="date-btn" data-period="yesterday" onclick="setDashboardPeriod('yesterday')">Yesterday</button>
+            <button class="date-btn" data-period="this_week" onclick="setDashboardPeriod('this_week')">This Week</button>
+            <button class="date-btn" data-period="this_month" onclick="setDashboardPeriod('this_month')">This Month</button>
+          </div>
+
+          <button class="btn-erp-action btn-erp-gold btn-topbar-sale" onclick="openNewSaleModal()">
+            ➕ New Sale
+          </button>
+
+          <!-- PROMINENT LOGOUT BUTTON ON TOPBAR -->
+          <button class="btn-topbar-logout" onclick="handleLogout()" title="Sign Out">
+            🚪 <span class="logout-label">Logout</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Dynamic Views Container -->
+      <div class="erp-content">
+
+        <!-- ==================================================================
+             TAB 1: DASHBOARD
+             ================================================================== -->
+        <div class="tab-content active" id="tab-dashboard">
+          <!-- Accounting Financial Equation Highlight Bar -->
+          <div class="financial-formula-bar">
+            <div class="formula-node">
+              <span>Gross Revenue (Sales)</span>
+              <strong id="formulaRevenue">Rs. 0</strong>
+            </div>
+            <div class="formula-operator">-</div>
+            <div class="formula-node">
+              <span>Cost of Goods (COGS)</span>
+              <strong id="formulaCogs" style="color:#c92a2a;">Rs. 0</strong>
+            </div>
+            <div class="formula-operator">=</div>
+            <div class="formula-node">
+              <span>Gross Profit</span>
+              <strong id="formulaGross" style="color:#2b8a3e;">Rs. 0</strong>
+            </div>
+            <div class="formula-operator">-</div>
+            <div class="formula-node">
+              <span>Operating Expenses</span>
+              <strong id="formulaExpenses" style="color:#c92a2a;">Rs. 0</strong>
+            </div>
+            <div class="formula-operator">=</div>
+            <div class="formula-node">
+              <span>Net Profit</span>
+              <strong id="formulaNet" style="color:#2b8a3e; font-size:1.3rem;">Rs. 0</strong>
+            </div>
+          </div>
+
+          <!-- KPI Cards Grid -->
+          <div class="kpi-grid">
+            <div class="kpi-card kpi-success">
+              <div class="kpi-header">
+                <span class="kpi-label">Today's Net Sales</span>
+                <span class="kpi-icon">💰</span>
+              </div>
+              <div class="kpi-value" id="kpiTodaySales">Rs. 0</div>
+              <div class="kpi-subtext" id="kpiTodaySalesCount">0 Invoices generated today</div>
+            </div>
+
+            <div class="kpi-card kpi-info">
+              <div class="kpi-header">
+                <span class="kpi-label">Today's Gross Profit</span>
+                <span class="kpi-icon">📊</span>
+              </div>
+              <div class="kpi-value" id="kpiTodayGrossProfit">Rs. 0</div>
+              <div class="kpi-subtext" id="kpiTodayGrossMargin">Gross Margin: 0%</div>
+            </div>
+
+            <div class="kpi-card kpi-danger">
+              <div class="kpi-header">
+                <span class="kpi-label">Today's Expenses</span>
+                <span class="kpi-icon">💸</span>
+              </div>
+              <div class="kpi-value" id="kpiTodayExpenses">Rs. 0</div>
+              <div class="kpi-subtext">Shop rent, electricity, tea, freight</div>
+            </div>
+
+            <div class="kpi-card kpi-warning">
+              <div class="kpi-header">
+                <span class="kpi-label">Today's Net Profit</span>
+                <span class="kpi-icon">✨</span>
+              </div>
+              <div class="kpi-value" id="kpiTodayNetProfit">Rs. 0</div>
+              <div class="kpi-subtext" id="kpiTodayNetMargin">Net Margin: 0%</div>
+            </div>
+          </div>
+
+          <!-- Secondary Overview Grid -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-label">This Month Net Sales</div>
+              <div class="kpi-value" id="kpiMonthSales">Rs. 0</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">This Month Net Profit</div>
+              <div class="kpi-value" id="kpiMonthNetProfit">Rs. 0</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Total Inventory Valuation (Cost)</div>
+              <div class="kpi-value" id="kpiInventoryValuation">Rs. 0</div>
+              <div class="kpi-subtext" id="kpiTotalStockUnits">0 Suits in Godown</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Customer Receivables (Udhaar Due)</div>
+              <div class="kpi-value" id="kpiReceivables" style="color:#c92a2a;">Rs. 0</div>
+              <div class="kpi-subtext">Supplier Payables: <span id="kpiPayables">Rs. 0</span></div>
+            </div>
+          </div>
+
+          <!-- Recent Transactions Widget -->
+          <div class="card-panel">
+            <div class="card-panel-header">
+              <h3 class="card-panel-title">📋 Today's Recent Sales Invoices</h3>
+              <button class="btn-erp-outline" onclick="switchTab('sales')">View Full Ledger →</button>
+            </div>
+            <div class="erp-table-responsive">
+              <table class="erp-table">
+                <thead>
+                  <tr>
+                    <th>Invoice #</th>
+                    <th>Time</th>
+                    <th>Customer Name</th>
+                    <th>Items</th>
+                    <th>Total (Rs.)</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="dashboardRecentSalesBody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================================================================
+             TAB 2: SALES LEDGER & POS
+             ================================================================== -->
+        <div class="tab-content" id="tab-sales">
+          <div class="card-panel">
+            <div class="card-panel-header">
+              <h3 class="card-panel-title">Daily Sales Records & Hisaab Kitaab</h3>
+              <div class="panel-controls">
+                <input type="text" id="saleSearchInput" class="erp-search-input" placeholder="Search invoice, customer, phone..." oninput="loadSales()">
+                <select id="salePaymentFilter" class="erp-select" onchange="loadSales()">
+                  <option value="All">All Payment Modes</option>
+                  <option value="Cash">Cash</option>
+                  <option value="Bank">Bank Transfer</option>
+                  <option value="JazzCash">JazzCash</option>
+                  <option value="EasyPaisa">EasyPaisa</option>
+                  <option value="Credit">Credit / Udhaar</option>
+                </select>
+                <button class="btn-erp-action btn-erp-gold" onclick="openNewSaleModal()">➕ Add Sale</button>
+              </div>
+            </div>
+            <div class="erp-table-responsive">
+              <table class="erp-table">
+                <thead>
+                  <tr>
+                    <th>Invoice #</th>
+                    <th>Date</th>
+                    <th>Customer</th>
+                    <th>Type</th>
+                    <th>Items Description</th>
+                    <th>Total (Rs.)</th>
+                    <th>Profit</th>
+                    <th>Payment</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="salesTableBody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================================================================
+             TAB 3: BILL SCANNER / OCR ("BILL KI PHOTO SE HISAB")
+             ================================================================== -->
+        <div class="tab-content" id="tab-ocr">
+          <div class="card-panel">
+            <div class="card-panel-header">
+              <h3 class="card-panel-title">📸 Bill Ki Photo Se Hisaab (Smart Receipt Scanner)</h3>
+              <span style="font-size: 0.75rem; color: var(--erp-muted);">
+                Workflow: Photo → Optical Extraction → Review & Correct Items → Save to Live Sales
+              </span>
+            </div>
+
+            <div style="padding: 24px;">
+              <div class="ocr-workflow-container">
+                <!-- Left: Upload & Camera Dropzone -->
+                <div>
+                  <div class="dropzone-box" id="ocrDropzone">
+                    <div class="dropzone-icon">📄</div>
+                    <div id="dropzonePrompt">
+                      <strong style="font-size: 1rem; color: var(--erp-primary);">Click to Upload Bill Photo</strong><br>
+                      <span style="font-size: 0.78rem; color: var(--erp-muted);">or drag and drop a handwritten or printed bill image</span>
+                    </div>
+
+                    <div id="ocrPreviewWrap" style="display: none; margin-top: 12px;">
+                      <img id="ocrPreviewImg" src="" alt="Bill Preview" style="max-height: 240px; margin: 0 auto; border-radius: 4px; box-shadow: var(--shadow-sm);">
+                    </div>
+
+                    <input type="file" id="ocrFileInput" accept="image/*" style="display: none;">
+                  </div>
+
+                  <div style="display: flex; gap: 10px; margin-top: 12px;">
+                    <button class="btn-erp-outline" style="flex:1;" onclick="document.getElementById('ocrFileInput').click()">
+                      📁 Choose From Gallery
+                    </button>
+                    <button class="btn-erp-outline" style="flex:1;" onclick="document.getElementById('ocrCameraInput').click()">
+                      📷 Open Camera
+                    </button>
+                    <input type="file" id="ocrCameraInput" accept="image/*" capture="environment" style="display: none;">
+                  </div>
+
+                  <!-- Status & Progress -->
+                  <div class="ocr-status-box" id="ocrStatusBox" style="background: #ffffff; border: 1px solid var(--erp-border);">
+                    <div id="ocrStatusText">Reading bill details...</div>
+                    <div class="ocr-progress-bar">
+                      <div class="ocr-progress-fill" id="ocrProgressFill"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Right: Editable Verification Section -->
+                <div id="ocrEditableSection" style="display: none; background: #ffffff; border: 1px solid var(--erp-border); border-radius: var(--radius-md); padding: 20px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px; border-bottom: 1px solid var(--erp-border); padding-bottom: 10px;">
+                    <h4 style="font-size: 0.95rem; font-weight: 700;">📝 Extracted Data (Editable Preview)</h4>
+                    <span style="font-size: 0.75rem; color: var(--erp-warning); font-weight: 600;">⚠️ Verify numbers before saving</span>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group-erp">
+                      <label>Customer Name / M/S:</label>
+                      <input type="text" id="ocrCustomerName" class="form-control-erp" placeholder="Walk-in or Buyer Name">
+                    </div>
+                    <div class="form-group-erp">
+                      <label>Customer Phone:</label>
+                      <input type="tel" id="ocrCustomerPhone" class="form-control-erp" placeholder="03XXXXXXXXX">
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group-erp">
+                      <label>Sale Type:</label>
+                      <select id="ocrSaleType" class="form-control-erp">
+                        <option value="retail">Retail Sale</option>
+                        <option value="wholesale">Wholesale Sale</option>
+                      </select>
+                    </div>
+                    <div class="form-group-erp">
+                      <label>Payment Mode:</label>
+                      <select id="ocrPaymentMethod" class="form-control-erp">
+                        <option value="Cash">Cash</option>
+                        <option value="Bank">Bank Transfer</option>
+                        <option value="JazzCash">JazzCash</option>
+                        <option value="EasyPaisa">EasyPaisa</option>
+                        <option value="Credit">Credit / Udhaar</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Extracted Line Items -->
+                  <table class="editable-items-table" style="margin-bottom: 14px;">
+                    <thead>
+                      <tr>
+                        <th>Item / Fabric Name</th>
+                        <th>Qty</th>
+                        <th>Rate (Rs.)</th>
+                        <th style="text-align: right;">Total</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody id="ocrEditableTableBody">
+                      <!-- Rendered dynamically -->
+                    </tbody>
+                  </table>
+
+                  <button type="button" class="btn-erp-outline" style="font-size:0.75rem; padding:4px 10px; margin-bottom: 16px;" onclick="addOcrBlankRow()">
+                    ➕ Add Line Item
+                  </button>
+
+                  <div class="form-group-erp">
+                    <label>Additional Notes:</label>
+                    <input type="text" id="ocrNotes" class="form-control-erp" placeholder="e.g. Scanned receipt from counter billbook">
+                  </div>
+
+                  <div style="display:flex; justify-content:space-between; align-items:center; border-top: 2px solid var(--erp-border); padding-top: 14px;">
+                    <div>
+                      <span style="font-size:0.75rem; color:var(--erp-muted); text-transform:uppercase;">Calculated Net Total:</span>
+                      <div id="ocrTotalDisplay" style="font-size:1.4rem; font-weight:700; color:var(--erp-primary);">Rs. 0</div>
+                    </div>
+
+                    <button class="btn-erp-action btn-erp-gold" style="padding: 12px 24px;" onclick="confirmAndSaveOcrBill()">
+                      💾 Save To Live Sales Ledger
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================================================================
+             TAB 4: PURCHASES & STOCK-IN
+             ================================================================== -->
+        <div class="tab-content" id="tab-purchases">
+          <div class="card-panel">
+            <div class="card-panel-header">
+              <h3 class="card-panel-title">Purchases From Mills & Godown Stock-In</h3>
+              <button class="btn-erp-action btn-erp-gold" onclick="openNewPurchaseModal()">➕ Stock In Purchase</button>
+            </div>
+            <div class="erp-table-responsive">
+              <table class="erp-table">
+                <thead>
+                  <tr>
+                    <th>Purchase #</th>
+                    <th>Date</th>
+                    <th>Supplier / Mill</th>
+                    <th>Items Received</th>
+                    <th>Total Cost (Rs.)</th>
+                    <th>Amount Paid</th>
+                    <th>Balance Due</th>
+                  </tr>
+                </thead>
+                <tbody id="purchasesTableBody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================================================================
+             TAB 5: INVENTORY & STOCK VALUATION
+             ================================================================== -->
+        <div class="tab-content" id="tab-inventory">
+          <!-- Valuation Metric Cards -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-label">Total Unique Designs</div>
+              <div class="kpi-value" id="invTotalItems">0</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Total Stock in Units</div>
+              <div class="kpi-value" id="invTotalUnits">0 Suits</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Total Cost Valuation</div>
+              <div class="kpi-value" id="invTotalCostVal">Rs. 0</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Total Retail Valuation</div>
+              <div class="kpi-value" id="invTotalRetailVal">Rs. 0</div>
+              <div class="kpi-subtext">Potential Profit: <span id="invExpectedMargin" style="color:#2b8a3e;font-weight:700;">Rs. 0</span></div>
+            </div>
+          </div>
+
+          <!-- Product Stock Status Table -->
+          <div class="card-panel">
+            <div class="card-panel-header">
+              <h3 class="card-panel-title">Stock Count & Low Stock Thresholds</h3>
+            </div>
+            <div class="erp-table-responsive">
+              <table class="erp-table">
+                <thead>
+                  <tr>
+                    <th>Product Name</th>
+                    <th>SKU</th>
+                    <th>Category</th>
+                    <th>Available Stock</th>
+                    <th>Status</th>
+                    <th>Unit Cost</th>
+                    <th>Total Cost Value</th>
+                    <th>Retail Price</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="inventoryProductsTableBody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Inventory Movements Log -->
+          <div class="card-panel">
+            <div class="card-panel-header">
+              <h3 class="card-panel-title">📜 Inventory Movement Audit Log</h3>
+            </div>
+            <div class="erp-table-responsive">
+              <table class="erp-table">
+                <thead>
+                  <tr>
+                    <th>Date / Time</th>
+                    <th>Product</th>
+                    <th>Movement Type</th>
+                    <th>Quantity</th>
+                    <th>Balance</th>
+                    <th>Reference</th>
+                  </tr>
+                </thead>
+                <tbody id="inventoryMovementsTableBody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================================================================
+             TAB 6: CUSTOMER UDHAAR LEDGER
+             ================================================================== -->
+        <div class="tab-content" id="tab-customers">
+          <div class="card-panel">
+            <div class="card-panel-header">
+              <h3 class="card-panel-title">Customer Accounts & Udhaar Balances</h3>
+              <div class="panel-controls">
+                <input type="text" id="customerSearchInput" class="erp-search-input" placeholder="Search customer..." oninput="loadCustomers()">
+              </div>
+            </div>
+            <div class="erp-table-responsive">
+              <table class="erp-table">
+                <thead>
+                  <tr>
+                    <th>Customer Name</th>
+                    <th>Phone</th>
+                    <th>City / Address</th>
+                    <th>Total Purchases</th>
+                    <th>Total Paid</th>
+                    <th>Outstanding Due</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="customersTableBody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================================================================
+             TAB 7: SUPPLIER LEDGER
+             ================================================================== -->
+        <div class="tab-content" id="tab-suppliers">
+          <div class="card-panel">
+            <div class="card-panel-header">
+              <h3 class="card-panel-title">Textile Mills & Suppliers Payables</h3>
+            </div>
+            <div class="erp-table-responsive">
+              <table class="erp-table">
+                <thead>
+                  <tr>
+                    <th>Mill / Supplier Name</th>
+                    <th>Company</th>
+                    <th>Phone</th>
+                    <th>Total Purchases</th>
+                    <th>Total Paid</th>
+                    <th>Outstanding Payable</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="suppliersTableBody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================================================================
+             TAB 8: SHOP OPERATING EXPENSES
+             ================================================================== -->
+        <div class="tab-content" id="tab-expenses">
+          <div class="card-panel">
+            <div class="card-panel-header">
+              <h3 class="card-panel-title">Shop Operating Expenses</h3>
+              <div class="panel-controls">
+                <span id="totalExpensesSum" style="font-weight:700; color:#c92a2a; margin-right:12px;">Total: Rs. 0</span>
+                <select id="expenseCategoryFilter" class="erp-select" onchange="loadExpenses()">
+                  <option value="All">All Categories</option>
+                  <option value="Shop Rent">Shop Rent</option>
+                  <option value="Electricity">Electricity</option>
+                  <option value="Freight/Cargo">Freight/Cargo</option>
+                  <option value="Staff Salary">Staff Salary</option>
+                  <option value="Refreshments">Refreshments</option>
+                  <option value="Packaging">Packaging</option>
+                  <option value="Miscellaneous">Miscellaneous</option>
+                </select>
+                <button class="btn-erp-action btn-erp-gold" onclick="openNewExpenseModal()">➕ Log Expense</button>
+              </div>
+            </div>
+            <div class="erp-table-responsive">
+              <table class="erp-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th>Amount (Rs.)</th>
+                    <th>Payment Mode</th>
+                    <th>Paid By</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="expensesTableBody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================================================================
+             TAB 9: PROFIT & LOSS (P&L) INCOME STATEMENT
+             ================================================================== -->
+        <div class="tab-content" id="tab-pl">
+          <div class="card-panel">
+            <div class="card-panel-header">
+              <h3 class="card-panel-title">📊 Comprehensive Income Statement (Profit & Loss)</h3>
+              <div class="panel-controls">
+                <select id="plPeriodSelect" class="erp-select" onchange="loadProfitLoss()">
+                  <option value="today">Today</option>
+                  <option value="this_week">This Week</option>
+                  <option value="this_month" selected>This Month</option>
+                  <option value="last_month">Last Month</option>
+                  <option value="this_year">This Year</option>
+                </select>
+                <button class="btn-erp-outline" onclick="window.print()">🖨️ Print Statement</button>
+              </div>
+            </div>
+
+            <div style="padding: 24px;">
+              <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 32px;">
+                <!-- Financial Statement Table -->
+                <div>
+                  <table class="erp-table" style="border: 1px solid var(--erp-border);">
+                    <tbody>
+                      <tr>
+                        <td><strong>Gross Revenue (Total Sales Billings)</strong></td>
+                        <td style="text-align:right; font-weight:700;" id="plGrossRevenue">Rs. 0</td>
+                      </tr>
+                      <tr>
+                        <td style="color:var(--erp-muted);">Less: Sales Discounts Given</td>
+                        <td style="text-align:right; color:#c92a2a;" id="plDiscounts">-Rs. 0</td>
+                      </tr>
+                      <tr style="background:#f8fafc; border-top:2px solid var(--erp-border);">
+                        <td><strong>Net Revenue (Net Sales)</strong></td>
+                        <td style="text-align:right; font-weight:700; font-size:1.05rem;" id="plNetRevenue">Rs. 0</td>
+                      </tr>
+                      <tr>
+                        <td style="color:#c92a2a;">Less: Cost of Goods Sold (COGS)</td>
+                        <td style="text-align:right; color:#c92a2a; font-weight:700;" id="plCOGS">-Rs. 0</td>
+                      </tr>
+                      <tr style="background:#eefcf2; border-top:2px solid #2b8a3e;">
+                        <td><strong>GROSS PROFIT</strong><br><small style="color:var(--erp-muted);">Net Revenue - COGS</small></td>
+                        <td style="text-align:right; font-weight:700; font-size:1.15rem; color:#2b8a3e;" id="plGrossProfit">Rs. 0</td>
+                      </tr>
+                      <tr>
+                        <td>Gross Margin %</td>
+                        <td style="text-align:right; font-weight:700;" id="plGrossMargin">0%</td>
+                      </tr>
+                      <tr>
+                        <td style="color:#c92a2a;">Less: Total Operating Expenses</td>
+                        <td style="text-align:right; color:#c92a2a; font-weight:700;" id="plOperatingExpenses">-Rs. 0</td>
+                      </tr>
+                      <tr style="background:var(--erp-sidebar); color:#fff; border-top:3px double var(--erp-gold);">
+                        <td style="color:#fff; padding:16px;"><strong>NET PROFIT (BOTTOM LINE)</strong><br><small style="color:var(--erp-gold-light);">Gross Profit - Operating Expenses</small></td>
+                        <td style="text-align:right; font-weight:700; font-size:1.4rem; padding:16px;" id="plNetProfit">Rs. 0</td>
+                      </tr>
+                      <tr>
+                        <td>Net Profit Margin %</td>
+                        <td style="text-align:right; font-weight:700;" id="plNetMargin">0%</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <!-- Operating Expense Breakdown -->
+                <div style="background:var(--erp-bg); padding:20px; border-radius:var(--radius-md); border:1px solid var(--erp-border);">
+                  <h4 style="margin-bottom: 12px; font-size: 0.95rem;">Expenses by Category</h4>
+                  <div id="plExpenseCategoryList">
+                    <!-- Populated dynamically -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================================================================
+             TAB 10: CASH & BANK RECONCILIATION
+             ================================================================== -->
+        <div class="tab-content" id="tab-reconciliation">
+          <div class="card-panel">
+            <div class="card-panel-header">
+              <h3 class="card-panel-title">Daily Cash & Bank Reconciliation</h3>
+              <div class="panel-controls">
+                <input type="date" id="reconcileDate" class="erp-select" onchange="loadReconciliation()">
+                <button class="btn-erp-outline" onclick="loadReconciliation()">Refresh</button>
+              </div>
+            </div>
+
+            <div style="padding: 24px;">
+              <div class="kpi-grid" id="reconcileGrid">
+                <!-- Populated dynamically with Cash, Bank, JazzCash, EasyPaisa cards -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================================================================
+             TAB 11: REPORT CENTER (ONE-CLICK CSV EXPORT)
+             ================================================================== -->
+        <div class="tab-content" id="tab-reports">
+          <div class="card-panel">
+            <div class="card-panel-header">
+              <h3 class="card-panel-title">📑 One-Click Report Generation & Export</h3>
+              <div class="panel-controls">
+                <select id="reportTypeSelect" class="erp-select" onchange="loadReportPreview()">
+                  <option value="sales">Sales Ledger Report</option>
+                  <option value="stock">Current Stock & Valuation</option>
+                  <option value="expenses">Operating Expenses Report</option>
+                  <option value="pl">Profit & Loss Income Statement</option>
+                  <option value="customers">Customer Outstanding (Udhaar)</option>
+                  <option value="suppliers">Supplier Payables Report</option>
+                </select>
+
+                <select id="reportPeriodSelect" class="erp-select" onchange="loadReportPreview()">
+                  <option value="today">Today</option>
+                  <option value="this_week">This Week</option>
+                  <option value="this_month" selected>This Month</option>
+                  <option value="last_month">Last Month</option>
+                  <option value="all">All Time</option>
+                </select>
+
+                <button class="btn-erp-action btn-erp-gold" onclick="downloadReportCSV()">
+                  ⬇️ Download CSV
+                </button>
+                <button class="btn-erp-outline" onclick="window.print()">
+                  🖨️ Print Report
+                </button>
+              </div>
+            </div>
+
+            <div class="erp-table-responsive">
+              <table class="erp-table">
+                <thead id="reportTableHead">
+                  <!-- Populated dynamically -->
+                </thead>
+                <tbody id="reportTableBody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================================================================
+             TAB: PRODUCTS & FABRICS (CRUD WITH IMAGE UPLOAD)
+             ================================================================== -->
+        <div class="tab-content" id="tab-products">
+          <div class="card-panel">
+            <div class="card-panel-header">
+              <h3 class="card-panel-title">👗 Unstitched Suits & Fabrics Catalog</h3>
+              <div class="panel-controls">
+                <input type="text" id="adminProductSearch" class="erp-search-input" placeholder="Search by name, SKU..." oninput="filterAdminProducts()">
+                <select id="adminProductCategoryFilter" class="erp-select" onchange="filterAdminProducts()">
+                  <option value="All">All Categories</option>
+                </select>
+                <button class="btn-erp-action btn-erp-gold" onclick="openNewProductModal()">
+                  ➕ Add New Product
+                </button>
+              </div>
+            </div>
+            <div class="erp-table-responsive">
+              <table class="erp-table">
+                <thead>
+                  <tr>
+                    <th style="width: 60px;">Image</th>
+                    <th>Product / Suit Name</th>
+                    <th>SKU</th>
+                    <th>Category</th>
+                    <th>Stock</th>
+                    <th>Cost (Rs.)</th>
+                    <th>Retail (Rs.)</th>
+                    <th>Wholesale (Rs.)</th>
+                    <th>Status</th>
+                    <th style="text-align: right; min-width: 140px;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adminProductsTableBody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================================================================
+             TAB 12: WEBSITE CMS & HERO BANNERS
+             ================================================================== -->
+        <div class="tab-content" id="tab-cms">
+          <!-- Hero Slides / Banners Manager -->
+          <div class="card-panel">
+            <div class="card-panel-header">
+              <h3 class="card-panel-title">🖼️ Hero Carousel Banners (Banners & Pictures)</h3>
+              <button class="btn-erp-action btn-erp-gold" onclick="openNewHeroSlideModal()">
+                ➕ Add New Hero Banner
+              </button>
+            </div>
+            <div style="padding: 20px;">
+              <p style="font-size:0.75rem; color:var(--erp-muted); margin-bottom: 14px;">Upload custom banners or promotional pictures for the homepage hero carousel. You can add, edit, or delete banners at any time.</p>
+              <div class="erp-table-responsive">
+                <table class="erp-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 100px;">Banner Preview</th>
+                      <th>Heading</th>
+                      <th>Subheading</th>
+                      <th>Badge</th>
+                      <th>Button Link</th>
+                      <th>Status</th>
+                      <th style="text-align: right; min-width: 130px;">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="cmsHeroSlidesTableBody">
+                    <!-- Populated dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-panel">
+            <div class="card-panel-header">
+              <h3 class="card-panel-title">📢 Rotating Announcement Bar Text</h3>
+              <button class="btn-erp-action btn-erp-gold" onclick="saveCMSAnnouncements()">Save Announcements</button>
+            </div>
+            <div style="padding: 20px;">
+              <p style="font-size:0.75rem; color:var(--erp-muted); margin-bottom: 8px;">Enter one announcement per line. They will rotate automatically on the storefront.</p>
+              <textarea id="cmsAnnouncementsText" class="form-control-erp" rows="4"></textarea>
+            </div>
+          </div>
+
+          <div class="card-panel">
+            <div class="card-panel-header">
+              <h3 class="card-panel-title">📍 Store Contact & WhatsApp Settings</h3>
+              <button class="btn-erp-action btn-erp-gold" onclick="saveCMSSettings()">Save Settings</button>
+            </div>
+            <div style="padding: 20px;">
+              <div class="form-row">
+                <div class="form-group-erp">
+                  <label>Business Name:</label>
+                  <input type="text" id="cmsShopName" class="form-control-erp">
+                </div>
+                <div class="form-group-erp">
+                  <label>Shop WhatsApp (with country code):</label>
+                  <input type="text" id="cmsShopWhatsapp" class="form-control-erp" value="+923363925950">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group-erp">
+                  <label>Phone / Helpline:</label>
+                  <input type="text" id="cmsShopPhone" class="form-control-erp" value="03363925950">
+                </div>
+                <div class="form-group-erp">
+                  <label>Physical Address:</label>
+                  <input type="text" id="cmsShopAddress" class="form-control-erp">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ========================================================================
+       3. MODALS
+       ======================================================================== -->
+
+  <!-- Modal: New Sale (POS) -->
+  <div class="erp-modal-overlay" id="newSaleModal">
+    <div class="erp-modal">
+      <div class="erp-modal-header">
+        <h3 class="erp-modal-title">➕ Record New Sale</h3>
+        <button onclick="closeModal('newSaleModal')" style="font-size:1.2rem; cursor:pointer;">✕</button>
+      </div>
+      <form onsubmit="submitNewSale(event)">
+        <div class="erp-modal-body">
+          <div class="form-group-erp">
+            <label>Select Fabric / Unstitched Suit:</label>
+            <select id="saleProductSelect" class="form-control-erp" required onchange="handleSaleProductChange()">
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group-erp">
+              <label>Sale Type:</label>
+              <select id="newSaleType" class="form-control-erp" onchange="handleSaleProductChange()">
+                <option value="retail">Retail Sale</option>
+                <option value="wholesale">Wholesale Sale</option>
+              </select>
+            </div>
+            <div class="form-group-erp">
+              <label>Quantity (Suits):</label>
+              <input type="number" id="newSaleQty" class="form-control-erp" value="1" min="1" required oninput="recalcNewSaleTotal()">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group-erp">
+              <label>Unit Selling Price (Rs.):</label>
+              <input type="number" id="newSaleUnitPrice" class="form-control-erp" required oninput="recalcNewSaleTotal()">
+            </div>
+            <div class="form-group-erp">
+              <label>Discount on Invoice (Rs.):</label>
+              <input type="number" id="newSaleDiscount" class="form-control-erp" value="0" min="0" oninput="recalcNewSaleTotal()">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group-erp">
+              <label>Customer Name:</label>
+              <input type="text" id="newSaleCustName" class="form-control-erp" placeholder="Walk-in Customer">
+            </div>
+            <div class="form-group-erp">
+              <label>Customer WhatsApp / Phone:</label>
+              <input type="tel" id="newSaleCustPhone" class="form-control-erp" placeholder="03XXXXXXXXX">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group-erp">
+              <label>Payment Method:</label>
+              <select id="newSalePaymentMethod" class="form-control-erp" onchange="recalcNewSaleTotal()">
+                <option value="Cash">Cash</option>
+                <option value="Bank">Bank Transfer</option>
+                <option value="JazzCash">JazzCash</option>
+                <option value="EasyPaisa">EasyPaisa</option>
+                <option value="Credit">Credit / Udhaar (Pay Later)</option>
+              </select>
+            </div>
+            <div class="form-group-erp">
+              <label>Amount Paid Now (Rs.):</label>
+              <input type="number" id="newSaleAmountPaid" class="form-control-erp" min="0">
+            </div>
+          </div>
+
+          <div class="form-group-erp">
+            <label>Notes / Cargo Details:</label>
+            <input type="text" id="newSaleNotes" class="form-control-erp" placeholder="e.g. Counter sale or Faisal Movers cargo">
+          </div>
+
+          <div style="background:var(--erp-bg); padding:12px; border-radius:var(--radius-sm); display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-weight:600;">Net Invoice Payable:</span>
+            <strong id="newSaleTotalDisplay" style="font-size:1.3rem; color:#2b8a3e;">Rs. 0</strong>
+          </div>
+        </div>
+
+        <div class="erp-modal-footer">
+          <button type="button" class="btn-erp-outline" onclick="closeModal('newSaleModal')">Cancel</button>
+          <button type="submit" class="btn-erp-action btn-erp-gold">Confirm Sale</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: New Purchase (Stock In) -->
+  <div class="erp-modal-overlay" id="newPurchaseModal">
+    <div class="erp-modal">
+      <div class="erp-modal-header">
+        <h3 class="erp-modal-title">📥 Stock-In From Mill / Supplier</h3>
+        <button onclick="closeModal('newPurchaseModal')">✕</button>
+      </div>
+      <form onsubmit="submitNewPurchase(event)">
+        <div class="erp-modal-body">
+          <div class="form-group-erp">
+            <label>Supplier / Textile Mill:</label>
+            <select id="purchaseSupplierSelect" class="form-control-erp">
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+
+          <div class="form-group-erp">
+            <label>Fabric Product:</label>
+            <select id="purchaseProductSelect" class="form-control-erp" required onchange="handlePurchaseProductChange()">
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group-erp">
+              <label>Quantity to Add (Suits):</label>
+              <input type="number" id="purchaseQty" class="form-control-erp" value="10" min="1" required>
+            </div>
+            <div class="form-group-erp">
+              <label>Unit Cost Price (Rs.):</label>
+              <input type="number" id="purchaseCostPrice" class="form-control-erp" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group-erp">
+              <label>Amount Paid to Supplier (Rs.):</label>
+              <input type="number" id="purchaseAmountPaid" class="form-control-erp" value="0" min="0">
+            </div>
+            <div class="form-group-erp">
+              <label>Payment Method:</label>
+              <select id="purchasePaymentMethod" class="form-control-erp">
+                <option value="Cash">Cash</option>
+                <option value="Bank">Bank Transfer</option>
+                <option value="Credit">Credit / Payable</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group-erp">
+            <label>Purchase Notes / Invoice Reference:</label>
+            <input type="text" id="purchaseNotes" class="form-control-erp" placeholder="e.g. Mill bill # 4022">
+          </div>
+        </div>
+
+        <div class="erp-modal-footer">
+          <button type="button" class="btn-erp-outline" onclick="closeModal('newPurchaseModal')">Cancel</button>
+          <button type="submit" class="btn-erp-action btn-erp-gold">Confirm Stock In</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: New Expense -->
+  <div class="erp-modal-overlay" id="newExpenseModal">
+    <div class="erp-modal">
+      <div class="erp-modal-header">
+        <h3 class="erp-modal-title">💸 Record Shop Expense</h3>
+        <button onclick="closeModal('newExpenseModal')">✕</button>
+      </div>
+      <form onsubmit="submitNewExpense(event)">
+        <div class="erp-modal-body">
+          <div class="form-row">
+            <div class="form-group-erp">
+              <label>Category:</label>
+              <select id="expCategory" class="form-control-erp" required>
+                <option value="Shop Rent">Shop Rent</option>
+                <option value="Electricity">Electricity</option>
+                <option value="Freight/Cargo">Freight/Cargo</option>
+                <option value="Staff Salary">Staff Salary</option>
+                <option value="Refreshments">Refreshments</option>
+                <option value="Packaging">Packaging</option>
+                <option value="Maintenance">Maintenance</option>
+                <option value="Miscellaneous">Miscellaneous</option>
+              </select>
+            </div>
+            <div class="form-group-erp">
+              <label>Amount (Rs.):</label>
+              <input type="number" id="expAmount" class="form-control-erp" required min="1">
+            </div>
+          </div>
+
+          <div class="form-group-erp">
+            <label>Description:</label>
+            <input type="text" id="expDescription" class="form-control-erp" placeholder="e.g. Monthly shop rent for Iqbal Cloth Market" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group-erp">
+              <label>Payment Method:</label>
+              <select id="expPaymentMethod" class="form-control-erp">
+                <option value="Cash">Cash</option>
+                <option value="Bank">Bank Transfer</option>
+                <option value="JazzCash">JazzCash</option>
+                <option value="EasyPaisa">EasyPaisa</option>
+              </select>
+            </div>
+            <div class="form-group-erp">
+              <label>Paid By (Staff / Owner):</label>
+              <input type="text" id="expPaidBy" class="form-control-erp" placeholder="Yousuf Mohsin">
+            </div>
+          </div>
+        </div>
+
+        <div class="erp-modal-footer">
+          <button type="button" class="btn-erp-outline" onclick="closeModal('newExpenseModal')">Cancel</button>
+          <button type="submit" class="btn-erp-action btn-erp-gold">Save Expense</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Adjust Stock -->
+  <div class="erp-modal-overlay" id="adjustStockModal">
+    <div class="erp-modal" style="max-width: 480px;">
+      <div class="erp-modal-header">
+        <h3 class="erp-modal-title">Manual Stock Adjustment</h3>
+        <button onclick="closeModal('adjustStockModal')">✕</button>
+      </div>
+      <form onsubmit="submitStockAdjustment(event)">
+        <div class="erp-modal-body">
+          <input type="hidden" id="adjustProductId">
+          <p style="margin-bottom: 14px;">Product: <strong id="adjustProductName"></strong></p>
+
+          <div class="form-group-erp">
+            <label>Adjustment Type:</label>
+            <select id="adjustMovementType" class="form-control-erp">
+              <option value="ADJUSTMENT">Stock Correction (+/-)</option>
+              <option value="DAMAGE">Damaged / Defective Thaan (-)</option>
+              <option value="LOSS">Lost / Missing (-)</option>
+            </select>
+          </div>
+
+          <div class="form-group-erp">
+            <label>Quantity (Positive to add, or count to deduct):</label>
+            <input type="number" id="adjustQuantity" class="form-control-erp" required>
+          </div>
+
+          <div class="form-group-erp">
+            <label>Reason / Note:</label>
+            <input type="text" id="adjustNotes" class="form-control-erp" placeholder="e.g. Physical stock count check">
+          </div>
+        </div>
+
+        <div class="erp-modal-footer">
+          <button type="button" class="btn-erp-outline" onclick="closeModal('adjustStockModal')">Cancel</button>
+          <button type="submit" class="btn-erp-action btn-erp-gold">Apply Adjustment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Customer Ledger Statement -->
+  <div class="erp-modal-overlay" id="customerLedgerModal">
+    <div class="erp-modal" style="max-width: 780px;">
+      <div class="erp-modal-header">
+        <h3 class="erp-modal-title" id="ledgerCustomerTitle">Customer Ledger Statement</h3>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn-erp-outline" onclick="window.print()">🖨️ Print</button>
+          <button onclick="closeModal('customerLedgerModal')">✕</button>
+        </div>
+      </div>
+      <div class="erp-modal-body">
+        <div id="ledgerSummaryBox"></div>
+        <div class="erp-table-responsive">
+          <table class="erp-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Debit (Rs.)</th>
+                <th>Credit (Rs.)</th>
+                <th>Balance (Rs.)</th>
+              </tr>
+            </thead>
+            <tbody id="ledgerTableBody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Customer Receive Cash -->
+  <div class="erp-modal-overlay" id="customerPaymentModal">
+    <div class="erp-modal" style="max-width: 460px;">
+      <div class="erp-modal-header">
+        <h3 class="erp-modal-title">Receive Customer Payment</h3>
+        <button onclick="closeModal('customerPaymentModal')">✕</button>
+      </div>
+      <form onsubmit="submitCustomerPayment(event)">
+        <div class="erp-modal-body">
+          <input type="hidden" id="payCustomerId">
+          <div style="background:var(--erp-bg); padding:12px; border-radius:var(--radius-sm); margin-bottom:16px;">
+            <div>Customer: <strong id="payCustomerName"></strong></div>
+            <div>Current Outstanding Due: <strong id="payCustomerDue" style="color:#c92a2a;">Rs. 0</strong></div>
+          </div>
+
+          <div class="form-group-erp">
+            <label>Amount Received (Rs.):</label>
+            <input type="number" id="payCustomerAmount" class="form-control-erp" required min="1">
+          </div>
+
+          <div class="form-group-erp">
+            <label>Payment Method:</label>
+            <select id="payCustomerMethod" class="form-control-erp">
+              <option value="Cash">Cash</option>
+              <option value="Bank">Bank Transfer</option>
+              <option value="JazzCash">JazzCash</option>
+              <option value="EasyPaisa">EasyPaisa</option>
+            </select>
+          </div>
+
+          <div class="form-group-erp">
+            <label>Receipt Notes:</label>
+            <input type="text" id="payCustomerNotes" class="form-control-erp" placeholder="e.g. Cleared Faisalabad cargo balance">
+          </div>
+        </div>
+
+        <div class="erp-modal-footer">
+          <button type="button" class="btn-erp-outline" onclick="closeModal('customerPaymentModal')">Cancel</button>
+          <button type="submit" class="btn-erp-action btn-erp-gold">Record Payment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Supplier Pay Cash -->
+  <div class="erp-modal-overlay" id="supplierPaymentModal">
+    <div class="erp-modal" style="max-width: 460px;">
+      <div class="erp-modal-header">
+        <h3 class="erp-modal-title">Pay Supplier / Mill</h3>
+        <button onclick="closeModal('supplierPaymentModal')">✕</button>
+      </div>
+      <form onsubmit="submitSupplierPayment(event)">
+        <div class="erp-modal-body">
+          <input type="hidden" id="paySupplierId">
+          <div style="background:var(--erp-bg); padding:12px; border-radius:var(--radius-sm); margin-bottom:16px;">
+            <div>Supplier: <strong id="paySupplierName"></strong></div>
+            <div>Payable Due: <strong id="paySupplierPayable" style="color:#c92a2a;">Rs. 0</strong></div>
+          </div>
+
+          <div class="form-group-erp">
+            <label>Amount Paid (Rs.):</label>
+            <input type="number" id="paySupplierAmount" class="form-control-erp" required min="1">
+          </div>
+
+          <div class="form-group-erp">
+            <label>Payment Method:</label>
+            <select id="paySupplierMethod" class="form-control-erp">
+              <option value="Cash">Cash</option>
+              <option value="Bank">Bank Transfer</option>
+              <option value="JazzCash">JazzCash</option>
+            </select>
+          </div>
+
+          <div class="form-group-erp">
+            <label>Notes / Bank Ref:</label>
+            <input type="text" id="paySupplierNotes" class="form-control-erp" placeholder="e.g. Online bank transfer via Habib Bank">
+          </div>
+        </div>
+
+        <div class="erp-modal-footer">
+          <button type="button" class="btn-erp-outline" onclick="closeModal('supplierPaymentModal')">Cancel</button>
+          <button type="submit" class="btn-erp-action btn-erp-gold">Record Payment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Add / Edit Product -->
+  <div class="erp-modal-overlay" id="productModal">
+    <div class="erp-modal" style="max-width: 680px;">
+      <div class="erp-modal-header">
+        <h3 class="erp-modal-title" id="productModalTitle">➕ Add New Product / Suit</h3>
+        <button onclick="closeModal('productModal')" style="font-size:1.2rem; cursor:pointer;">✕</button>
+      </div>
+      <form onsubmit="submitProductForm(event)">
+        <div class="erp-modal-body" style="max-height: 75vh; overflow-y: auto;">
+          <input type="hidden" id="prodEditId">
+          <div id="prodModalError" style="display:none; background:#ffe3e3; color:#c92a2a; border:1px solid #ffa8a8; padding:10px 14px; border-radius:4px; font-size:0.85rem; margin-bottom:14px; font-weight:600;"></div>
+
+          <div class="form-row">
+            <div class="form-group-erp">
+              <label>Product Name <span style="color:#c92a2a;">*</span>:</label>
+              <input type="text" id="prodName" class="form-control-erp" placeholder="e.g. Mughal Bagh Printed Swiss Lawn 3pc" required>
+            </div>
+            <div class="form-group-erp">
+              <label>SKU Code <span style="color:#c92a2a;">*</span>:</label>
+              <input type="text" id="prodSku" class="form-control-erp" placeholder="e.g. ANW-LWN-004" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group-erp">
+              <label>Category <span style="color:#c92a2a;">*</span>:</label>
+              <select id="prodCategory" class="form-control-erp" required>
+                <option value="Unstitched Lawn">Unstitched Lawn</option>
+                <option value="Luxury Chiffon">Luxury Chiffon</option>
+                <option value="Cotton">Cotton</option>
+                <option value="Jacquard">Jacquard</option>
+                <option value="Embroidered">Embroidered</option>
+                <option value="Winter Collection">Winter Collection</option>
+                <option value="Wholesale Bundles">Wholesale Bundles</option>
+              </select>
+            </div>
+            <div class="form-group-erp">
+              <label>Fabric Type:</label>
+              <input type="text" id="prodFabricType" class="form-control-erp" placeholder="e.g. Swiss Lawn, Chiffon, Cotton">
+            </div>
+            <div class="form-group-erp">
+              <label>Color Tone:</label>
+              <input type="text" id="prodColor" class="form-control-erp" placeholder="e.g. Mustard Yellow & Ivory">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group-erp">
+              <label>Cost Price (Rs.) <span style="color:#c92a2a;">*</span>:</label>
+              <input type="number" id="prodCostPrice" class="form-control-erp" placeholder="2800" required min="0">
+            </div>
+            <div class="form-group-erp">
+              <label>Retail Price (Rs.) <span style="color:#c92a2a;">*</span>:</label>
+              <input type="number" id="prodRetailPrice" class="form-control-erp" placeholder="4850" required min="0">
+            </div>
+            <div class="form-group-erp">
+              <label>Wholesale Price (Rs.):</label>
+              <input type="number" id="prodWholesalePrice" class="form-control-erp" placeholder="3850" min="0">
+            </div>
+            <div class="form-group-erp">
+              <label>Sale Price (Optional Rs.):</label>
+              <input type="number" id="prodSalePrice" class="form-control-erp" placeholder="Leave blank if not on sale" min="0">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group-erp">
+              <label>Available Stock (Suits):</label>
+              <input type="number" id="prodStock" class="form-control-erp" value="25" min="0">
+            </div>
+            <div class="form-group-erp">
+              <label>Low Stock Alert Threshold:</label>
+              <input type="number" id="prodThreshold" class="form-control-erp" value="5" min="1">
+            </div>
+            <div class="form-group-erp">
+              <label>Emoji Icon (Fallback):</label>
+              <input type="text" id="prodEmoji" class="form-control-erp" value="👗" placeholder="👗, 🧵, 🪡, ✨, 🌸">
+            </div>
+          </div>
+
+          <!-- Product Image Upload / Link -->
+          <div style="background:var(--erp-bg); padding:14px; border-radius:var(--radius-sm); border:1px solid var(--erp-border); margin-bottom:16px;">
+            <label style="font-weight:700; color:var(--erp-secondary); display:block; margin-bottom:8px;">
+              📸 Product Picture / Image (Upload or URL):
+            </label>
+            <div class="form-row" style="align-items: center;">
+              <div class="form-group-erp" style="flex:1;">
+                <label style="font-size:0.75rem;">Upload Image File:</label>
+                <input type="file" id="prodImageFile" class="form-control-erp" accept="image/*" onchange="handleProductImageFileSelect(this)">
+              </div>
+              <div class="form-group-erp" style="flex:1;">
+                <label style="font-size:0.75rem;">Or Image URL:</label>
+                <input type="text" id="prodImageUrl" class="form-control-erp" placeholder="https://... or /uploads/..." oninput="handleProductImageUrlInput(this.value)">
+              </div>
+              <div style="width:70px; height:80px; border:1px dashed var(--erp-border); border-radius:4px; display:flex; align-items:center; justify-content:center; overflow:hidden; background:#fff;" id="prodImagePreviewBox">
+                <span style="font-size:2rem;" id="prodImagePreviewEmoji">👗</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group-erp" style="flex:2;">
+              <label>Badges (Comma-separated, e.g. "HOT SELLER, EVERYDAY COMFORT"):</label>
+              <input type="text" id="prodBadges" class="form-control-erp" placeholder="HOT SELLER, FESTIVE EDIT">
+            </div>
+            <div class="form-group-erp" style="flex:1; display:flex; align-items:center; gap:16px; margin-top:20px;">
+              <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer;">
+                <input type="checkbox" id="prodIsOnSale"> On Sale
+              </label>
+              <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer;">
+                <input type="checkbox" id="prodActive" checked> Active
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group-erp">
+            <label>Product Description:</label>
+            <textarea id="prodDescription" class="form-control-erp" rows="3" placeholder="Fabric details, unstitched shirt, dupatta, trouser specifications..."></textarea>
+          </div>
+        </div>
+
+        <div class="erp-modal-footer">
+          <button type="button" class="btn-erp-outline" onclick="closeModal('productModal')">Cancel</button>
+          <button type="submit" class="btn-erp-action btn-erp-gold" id="btnSaveProduct">Save Product</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Add / Edit Hero Banner Slide -->
+  <div class="erp-modal-overlay" id="heroSlideModal">
+    <div class="erp-modal" style="max-width: 620px;">
+      <div class="erp-modal-header">
+        <h3 class="erp-modal-title" id="heroSlideModalTitle">➕ Add Hero Carousel Banner</h3>
+        <button onclick="closeModal('heroSlideModal')" style="font-size:1.2rem; cursor:pointer;">✕</button>
+      </div>
+      <form onsubmit="submitHeroSlideForm(event)">
+        <div class="erp-modal-body" style="max-height: 75vh; overflow-y: auto;">
+          <input type="hidden" id="heroSlideEditId">
+
+          <div class="form-group-erp">
+            <label>Main Headline <span style="color:#c92a2a;">*</span>:</label>
+            <input type="text" id="heroHeading" class="form-control-erp" placeholder="e.g. THE ART OF FINE FABRICS" required>
+          </div>
+
+          <div class="form-group-erp">
+            <label>Subheading Text:</label>
+            <textarea id="heroSubheading" class="form-control-erp" rows="2" placeholder="e.g. Exquisite Pakistani unstitched lawn, festive chiffon, and luxury cotton collections direct from Karachi wholesale market."></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group-erp">
+              <label>Badge Text:</label>
+              <input type="text" id="heroBadge" class="form-control-erp" placeholder="e.g. ✨ NEW FESTIVE 2026">
+            </div>
+            <div class="form-group-erp">
+              <label>Button Text:</label>
+              <input type="text" id="heroBtnText" class="form-control-erp" placeholder="SHOP COLLECTION" value="SHOP COLLECTION">
+            </div>
+            <div class="form-group-erp">
+              <label>Button Link / URL:</label>
+              <input type="text" id="heroBtnUrl" class="form-control-erp" placeholder="#collection" value="#collection">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group-erp">
+              <label>Sort Order (0, 1, 2...):</label>
+              <input type="number" id="heroSortOrder" class="form-control-erp" value="0" min="0">
+            </div>
+            <div class="form-group-erp" style="display:flex; align-items:center; margin-top:20px;">
+              <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer;">
+                <input type="checkbox" id="heroActive" checked> Active on Homepage
+              </label>
+            </div>
+          </div>
+
+          <!-- Hero Banner Image Upload / Link -->
+          <div style="background:var(--erp-bg); padding:14px; border-radius:var(--radius-sm); border:1px solid var(--erp-border); margin-bottom:16px;">
+            <label style="font-weight:700; color:var(--erp-secondary); display:block; margin-bottom:8px;">
+              🖼️ Banner Background Picture (Upload or URL):
+            </label>
+            <div class="form-row" style="align-items: center;">
+              <div class="form-group-erp" style="flex:1;">
+                <label style="font-size:0.75rem;">Upload Banner Image:</label>
+                <input type="file" id="heroImageFile" class="form-control-erp" accept="image/*" onchange="handleHeroImageFileSelect(this)">
+              </div>
+              <div class="form-group-erp" style="flex:1;">
+                <label style="font-size:0.75rem;">Or Banner Image URL:</label>
+                <input type="text" id="heroImageUrl" class="form-control-erp" placeholder="https://... or /uploads/..." oninput="handleHeroImageUrlInput(this.value)">
+              </div>
+            </div>
+            <div id="heroImagePreviewBox" style="width:100%; height:110px; border:1px dashed var(--erp-border); border-radius:4px; display:flex; align-items:center; justify-content:center; overflow:hidden; background:#fff; margin-top:8px;">
+              <span style="color:var(--erp-muted); font-size:0.8rem;">No custom banner image selected (Luxury gold gradient will be used)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="erp-modal-footer">
+          <button type="button" class="btn-erp-outline" onclick="closeModal('heroSlideModal')">Cancel</button>
+          <button type="submit" class="btn-erp-action btn-erp-gold" id="btnSaveHeroSlide">Save Hero Banner</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Universal Custom Confirmation Dialog (Unblockable by browser) -->
+  <div class="erp-modal-overlay" id="customConfirmModal">
+    <div class="erp-modal" style="max-width: 450px; text-align: center; border-radius: 8px;">
+      <div style="padding: 24px 24px 12px;">
+        <div style="font-size: 2.8rem; margin-bottom: 8px;">⚠️</div>
+        <h3 id="customConfirmTitle" style="font-family: var(--font-serif); font-size: 1.3rem; margin-bottom: 8px; color: var(--erp-primary);">Confirm Action</h3>
+        <p id="customConfirmMessage" style="color: var(--erp-secondary); font-size: 0.92rem; line-height: 1.5; margin-bottom: 12px;">Are you sure you want to proceed?</p>
+        <div id="customConfirmDetails" style="font-size: 0.8rem; color: var(--erp-muted); background: var(--erp-bg); padding: 8px 12px; border-radius: 4px; border: 1px solid var(--erp-border); margin-bottom: 16px; word-break: break-all; display: none;"></div>
+      </div>
+      <div class="erp-modal-footer" style="justify-content: center; gap: 12px; background: transparent; border-top: none; padding-bottom: 24px;">
+        <button type="button" class="btn-erp-outline" onclick="closeModal('customConfirmModal')" style="min-width: 100px;">Cancel</button>
+        <button type="button" class="btn-erp-action" id="btnCustomConfirmAction" style="background: #c92a2a; color: #fff; min-width: 120px;">Yes, Proceed</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Modules -->
+  <script src="/js/admin.js?v=3.5"></script>
+  <script src="/js/ocr-scanner.js?v=3.5"></script>
+</body>
+</html>

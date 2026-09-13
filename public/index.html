@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>AL ANWAR FABRICS & CLOTH | Luxury Unstitched Suits & Karachi Wholesale</title>
+  <meta name="description" content="Al Anwar Fabrics & Cloth - Wholesale & Retail unstitched luxury lawn, festive chiffon, and pure cotton collections. Shop # M101/1, Iqbal Cloth Market, M.A. Jinnah Road, Karachi.">
+  <meta name="keywords" content="Al Anwar Cloth, Unstitched Lawn, Luxury Chiffon, Iqbal Cloth Market, Wholesale Fabric Karachi, Pakistan Designer Suits">
+  <meta name="theme-color" content="#0d141e">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="AL ANWAR FABRICS & CLOTH | Luxury Unstitched Suits">
+  <meta property="og:description" content="Shop # M101/1, Iqbal Cloth Market, M.A. Jinnah Road, Karachi. Premium wholesale and retail fabrics.">
+  <meta property="og:type" content="website">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- ========================================================================
+       1. TOP ANNOUNCEMENT BAR
+       ======================================================================== -->
+  <div class="announcement-bar">
+    <div class="container announcement-inner">
+      <div class="announcement-carousel" id="announcementText">
+        ✨ Free Delivery Nationwide on Orders Over Rs. 5,000 across Pakistan
+      </div>
+      <div class="announcement-links">
+        <a href="https://wa.me/923363925950" target="_blank">📞 03363925950</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       2. STICKY MAIN HEADER
+       ======================================================================== -->
+  <header class="main-header">
+    <div class="container header-inner">
+      <!-- Left: Mobile Hamburger & Menu -->
+      <div class="header-left">
+        <button class="btn-hamburger" id="hamburgerBtn" aria-label="Open Navigation Menu">
+          <div class="hamburger-icon">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <span style="font-size: 0.78rem; letter-spacing: 1.5px;">MENU</span>
+        </button>
+      </div>
+
+      <!-- Center: Luxury Serif Brand Title -->
+      <div class="brand-logo-wrap">
+        <a href="/" class="brand-title">
+          AL ANWAR <span>FABRICS</span>
+          <span class="brand-tagline">Wholesale & Retail • Karachi</span>
+        </a>
+      </div>
+
+      <!-- Right: Search, Currency, Wishlist, Cart -->
+      <div class="header-right">
+        <span class="currency-badge">PKR / Rs.</span>
+
+        <!-- Wishlist -->
+        <button class="nav-icon-btn" onclick="scrollToSection('collection')" title="Wishlist">
+          <span>🤍</span>
+          <span class="icon-badge" id="wishlistCountBadge" style="display:none;">0</span>
+        </button>
+
+        <!-- Slide-over Cart Trigger -->
+        <button class="nav-icon-btn" onclick="toggleCart(true)" title="Shopping Bag">
+          <span>🛍️</span>
+          <span style="font-size: 0.78rem; font-weight: 600; text-transform: uppercase;">BAG</span>
+          <span class="icon-badge" id="cartCountBadge" style="display:none;">0</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Desktop Category Navigation Bar -->
+    <nav class="category-nav-bar" aria-label="Collections">
+      <div class="container">
+        <ul class="category-nav-list" id="categoryNavList">
+          <!-- Populated dynamically by app.js -->
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ========================================================================
+       3. HERO CAMPAIGN CAROUSEL
+       ======================================================================== -->
+  <section class="hero-section" id="heroSection">
+    <div id="heroSlideContainer" style="width: 100%;">
+      <!-- Populated dynamically from CMS by app.js -->
+      <div class="hero-slide active">
+        <div class="hero-slide-bg"></div>
+        <div class="container">
+          <div class="hero-content">
+            <div class="hero-badge">✨ NEW FESTIVE 2026</div>
+            <h1 class="hero-heading">THE ART OF FINE FABRICS</h1>
+            <p class="hero-subheading">Exquisite Pakistani unstitched lawn, festive chiffon, and pure cotton ensembles direct from Karachi wholesale market.</p>
+            <div class="hero-actions">
+              <a href="#collection" class="btn-luxury-gold">SHOP COLLECTION →</a>
+              <a href="https://wa.me/923363925950?text=Assalam-o-Alaikum%20Al%20Anwar%20Cloth!%20I%20am%20interested%20in%20wholesale%20rates" target="_blank" class="btn-luxury-outline">WHOLESALE INQUIRY</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-nav" id="heroDots"></div>
+  </section>
+
+  <!-- ========================================================================
+       4. CURATED COLLECTIONS SHOWCASE
+       ======================================================================== -->
+  <section class="section-padding">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-subtitle">Curated For You</div>
+        <h2 class="section-title">EXCLUSIVE FABRIC COLLECTIONS</h2>
+        <div class="section-divider"></div>
+      </div>
+      <div class="collection-grid" id="collectionShowcaseGrid">
+        <!-- Populated dynamically -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       5. PRODUCT CATALOG WITH FILTERS (3:4 PORTRAIT LUXURY CARDS)
+       ======================================================================== -->
+  <section class="section-padding" id="collection" style="background-color: #ffffff; border-top: 1px solid var(--border-light);">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-subtitle">Summer & Festive Edit</div>
+        <h2 class="section-title">UNSTITCHED DESIGNER SUITS</h2>
+        <div class="section-divider"></div>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="filter-bar">
+        <div class="filter-categories" id="filterChips">
+          <!-- Populated dynamically -->
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Search fabric, color, SKU..."
+            class="form-input"
+            style="width: 220px; padding: 6px 12px; font-size: 0.8rem; background: #fff; color: #121414; border: 1px solid var(--border-light);"
+            oninput="handleSearch(this.value)"
+          >
+          <select class="filter-sort-select" onchange="sortBy(this.value)">
+            <option value="newest">Featured & Newest</option>
+            <option value="price_asc">Price: Low to High</option>
+            <option value="price_desc">Price: High to Low</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <span id="productCount" style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Loading...</span>
+        <span style="font-size: 0.78rem; color: var(--color-gold-dark); font-weight: 600;">✨ Wholesale rates available for shopkeepers & resellers</span>
+      </div>
+
+      <!-- Product Cards Grid -->
+      <div class="product-grid" id="productGrid">
+        <!-- Rendered dynamically by app.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       6. PROMOTIONAL BANNERS
+       ======================================================================== -->
+  <section class="promo-banners-section container">
+    <div class="promo-grid">
+      <div class="promo-banner">
+        <div class="promo-banner-badge">FESTIVE & BRIDAL</div>
+        <h3 class="promo-banner-title">LUXURY CHIFFON & ORGANZA</h3>
+        <p class="promo-banner-desc">Handcrafted embellishments, zardozi work, and cutwork dupattas designed for weddings and special occasions.</p>
+        <button class="btn-luxury-gold" onclick="filterByCategory('Luxury Chiffon'); scrollToSection('collection');">VIEW DESIGNS →</button>
+      </div>
+
+      <div class="promo-banner" style="background: linear-gradient(135deg, #151e2b 0%, #0d141e 100%);">
+        <div class="promo-banner-badge">DIRECT FROM MILLS</div>
+        <h3 class="promo-banner-title">WHOLESALE MASTER THAAN</h3>
+        <p class="promo-banner-desc">Wholesale bundles, bulk unstitched suits, and thaans for boutique owners and cloth houses across Pakistan.</p>
+        <a href="https://wa.me/923363925950?text=Assalam-o-Alaikum%20Al%20Anwar%20Cloth!%20I%20want%20wholesale%20catalogue%20and%20rates" target="_blank" class="btn-luxury-outline">CONTACT WHOLESALE DESK</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       7. TRUST FEATURES BAR
+       ======================================================================== -->
+  <div class="trust-bar">
+    <div class="container trust-grid">
+      <div class="trust-item">
+        <div class="trust-icon">🧵</div>
+        <div>
+          <div class="trust-title">100% Original Fabric</div>
+          <div class="trust-subtitle">Authentic premium lawn, chiffon & cotton</div>
+        </div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">📦</div>
+        <div>
+          <div class="trust-title">Karachi Wholesale Rates</div>
+          <div class="trust-subtitle">Direct pricing from Iqbal Cloth Market</div>
+        </div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">🚚</div>
+        <div>
+          <div class="trust-title">Delivery Across Pakistan</div>
+          <div class="trust-subtitle">TCS, Leopard & Cargo for wholesale</div>
+        </div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">💬</div>
+        <div>
+          <div class="trust-title">WhatsApp Order Desk</div>
+          <div class="trust-subtitle">Instant response on 03363925950</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       8. SHOP CONTACT & LOCATION SECTION
+       ======================================================================== -->
+  <section class="shop-contact-section" id="contact">
+    <div class="container shop-contact-grid">
+      <div class="shop-info-card">
+        <div class="section-subtitle">Visit Our Shop in Karachi</div>
+        <h3 class="shop-info-title">AL ANWAR FABRICS & CLOTH</h3>
+
+        <div class="shop-address-block">
+          <span class="shop-address-icon">📍</span>
+          <div>
+            <strong>Physical Address:</strong><br>
+            M.A. Jinnah Road, Iqbal Cloth Market,<br>
+            Shop # M101/1, Karachi, Pakistan.
+          </div>
+        </div>
+
+        <ul class="shop-meta-list">
+          <li class="shop-meta-item">
+            <span>💬</span>
+            <div><strong>WhatsApp Order:</strong> <a href="https://wa.me/923363925950" target="_blank" style="color: #2b8a3e; font-weight: 700;">03363925950 (+923363925950)</a></div>
+          </li>
+          <li class="shop-meta-item">
+            <span>⏰</span>
+            <div><strong>Business Hours:</strong> Monday – Saturday: 11:00 AM – 9:00 PM (Sunday Closed)</div>
+          </li>
+          <li class="shop-meta-item">
+            <span>🏷️</span>
+            <div><strong>Business Type:</strong> Wholesale & Retail Unstitched Suits</div>
+          </li>
+        </ul>
+
+        <div class="shop-btn-row">
+          <a href="https://wa.me/923363925950?text=Assalam-o-Alaikum%20Al%20Anwar%20Cloth!%20I%20want%20to%20visit%20your%20shop" target="_blank" class="btn-luxury-gold" style="background:#25d366;color:#fff;box-shadow:none;">
+            💬 Chat on WhatsApp
+          </a>
+          <a href="https://maps.google.com/?q=Iqbal+Cloth+Market+MA+Jinnah+Road+Karachi" target="_blank" class="btn-luxury-outline" style="color:var(--text-primary);border-color:var(--border-light);">
+            🗺️ View on Google Maps
+          </a>
+        </div>
+      </div>
+
+      <!-- Wholesale Inquiry Form -->
+      <div class="wholesale-inquiry-box">
+        <h4 class="wholesale-inquiry-title">Wholesale & B2B Inquiries</h4>
+        <p class="wholesale-inquiry-desc">Are you a boutique owner, reseller, or retail cloth shop? Send us your requirements for volume discounts and master bundle rates.</p>
+
+        <form onsubmit="event.preventDefault(); alert('Thank you! Our wholesale manager will contact you on WhatsApp.'); this.reset();">
+          <div class="form-group">
+            <input type="text" class="form-input" placeholder="Your Name / Boutique Name" required>
+          </div>
+          <div class="form-group">
+            <input type="tel" class="form-input" placeholder="WhatsApp / Mobile Number" required>
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-input" placeholder="City (e.g. Lahore, Faisalabad, Multan)">
+          </div>
+          <div class="form-group">
+            <textarea class="form-input" rows="3" placeholder="Fabric type & estimated quantity (e.g. 50 suits Lawn 3pc)"></textarea>
+          </div>
+          <button type="submit" class="btn-luxury-gold" style="width:100%;">SEND WHOLESALE INQUIRY</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       9. FOOTER
+       ======================================================================== -->
+  <footer class="main-footer">
+    <div class="container footer-grid">
+      <div>
+        <div class="footer-brand-title">AL ANWAR FABRICS & CLOTH</div>
+        <p class="footer-brand-desc">
+          Karachi's premier destination for high-end unstitched luxury lawn, festive chiffon, pure cotton and wholesale bundles direct from Iqbal Cloth Market.
+        </p>
+        <p style="font-size: 0.8rem; color: #fff;">Shop # M101/1, Iqbal Cloth Market, M.A. Jinnah Road, Karachi.</p>
+      </div>
+
+      <div>
+        <h4 class="footer-col-title">Collections</h4>
+        <ul class="footer-links">
+          <li><a href="#collection" onclick="filterByCategory('Unstitched Lawn')">Unstitched Lawn 3pc</a></li>
+          <li><a href="#collection" onclick="filterByCategory('Luxury Chiffon')">Luxury Chiffon Festive</a></li>
+          <li><a href="#collection" onclick="filterByCategory('Cotton')">Pure Cotton Collection</a></li>
+          <li><a href="#collection" onclick="filterByCategory('Jacquard')">Zari Jacquard</a></li>
+          <li><a href="#collection" onclick="filterByCategory('Wholesale')">Wholesale Master Bundles</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="footer-col-title">Customer Care</h4>
+        <ul class="footer-links">
+          <li><a href="https://wa.me/923363925950" target="_blank">WhatsApp Helpline</a></li>
+          <li><a href="#contact">Shop Location & Timings</a></li>
+          <li><a href="#contact">Wholesale Delivery Policy</a></li>
+          <li><a href="#contact">Fabric Care & Guidance</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="footer-col-title">Wholesale Inquiries</h4>
+        <p style="margin-bottom: 12px; line-height: 1.6;">Direct WhatsApp line for bulk purchases & cargo tracking:</p>
+        <a href="https://wa.me/923363925950" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; color: #25d366; font-size: 1.1rem; font-weight: 700; margin-bottom: 16px;">
+          💬 03363925950
+        </a>
+        <p style="font-size: 0.75rem;">Cargo dispatched daily via Faisal Movers, Daewoo, and registered goods transport across Pakistan.</p>
+      </div>
+    </div>
+
+    <div class="container footer-bottom">
+      <div>© 2026 AL ANWAR FABRICS & CLOTH. All Rights Reserved. Iqbal Cloth Market, Karachi.</div>
+      <div>
+        <span style="color: var(--color-gold); font-size: 0.8rem; letter-spacing: 0.5px;">Premium Unstitched Lawn & Karachi Wholesale</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================================================
+       10. SLIDE-OVER SHOPPING CART DRAWER
+       ======================================================================== -->
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+
+  <div class="cart-drawer" id="cartDrawer">
+    <div class="drawer-header">
+      <h3 class="drawer-title">Shopping Bag</h3>
+      <button class="drawer-close-btn" onclick="toggleCart(false)">✕</button>
+    </div>
+
+    <div class="cart-items-body" id="cartItemsBody">
+      <!-- Populated dynamically -->
+    </div>
+
+    <div class="drawer-footer">
+      <div id="deliveryNotice" style="font-size: 0.75rem; color: #2b8a3e; margin-bottom: 10px; text-align: center;">
+        Free Delivery nationwide on orders over Rs. 5,000.
+      </div>
+      <div class="cart-summary-row">
+        <span>Subtotal</span>
+        <span id="cartSubtotal">Rs. 0</span>
+      </div>
+      <div class="cart-summary-row">
+        <span>Estimated Delivery</span>
+        <span id="cartDeliveryFee">Rs. 0</span>
+      </div>
+      <div class="cart-summary-total">
+        <span>Total Amount</span>
+        <span id="cartGrandTotal">Rs. 0</span>
+      </div>
+
+      <button class="btn-checkout-whatsapp" onclick="checkoutWhatsApp()">
+        💬 Order via WhatsApp (Fastest)
+      </button>
+      <button class="btn-luxury-outline" style="width:100%; color:var(--text-secondary); border-color:var(--border-light); font-size:0.75rem; padding:10px;" onclick="toggleCart(false)">
+        Continue Shopping
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       11. PRODUCT QUICK VIEW MODAL
+       ======================================================================== -->
+  <div class="modal-overlay" id="quickViewModal">
+    <div class="modal-content" id="quickViewBody">
+      <!-- Populated dynamically -->
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       12. MOBILE NAVIGATION DRAWER
+       ======================================================================== -->
+  <div class="mobile-nav-drawer" id="mobileNavDrawer">
+    <div class="mobile-nav-header">
+      <span style="font-family: var(--font-heading); font-size: 1.2rem; letter-spacing: 2px;">AL ANWAR CLOTH</span>
+      <button style="color: #fff; font-size: 1.3rem;" onclick="toggleMobileMenu(false)">✕</button>
+    </div>
+    <ul class="mobile-nav-list" id="mobileNavList">
+      <!-- Populated dynamically -->
+    </ul>
+  </div>
+
+  <!-- ========================================================================
+       13. FLOATING WHATSAPP BUTTON
+       ======================================================================== -->
+  <a href="https://wa.me/923363925950?text=Assalam-o-Alaikum%20Al%20Anwar%20Cloth!%20I%20have%20an%20inquiry%20regarding%20fabrics" class="floating-whatsapp" target="_blank" title="Chat on WhatsApp (03363925950)">
+    💬
+  </a>
+
+  <!-- JavaScript -->
+  <script src="/js/app.js"></script>
+</body>
+</html>
