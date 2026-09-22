@@ -1752,17 +1752,181 @@ img {
     display: none;
   }
   .header-inner {
-    grid-template-columns: auto 1fr auto;
-    gap: 10px;
-    padding: 12px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    gap: 8px;
+  }
+  .header-left {
+    flex: 0 0 auto;
+    gap: 0;
+  }
+  .btn-hamburger {
+    padding: 6px 8px;
+    gap: 0;
+  }
+  .menu-label,
+  .currency-badge,
+  .cart-label {
+    display: none !important;
+  }
+  .brand-logo-wrap {
+    flex: 1 1 auto;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    min-width: 0;
   }
   .brand-title {
-    font-size: 1.35rem;
-    letter-spacing: 2px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 100%;
+  }
+  .brand-logo-img {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    border-width: 1px;
+    box-shadow: 0 2px 8px rgba(223, 183, 108, 0.25);
+  }
+  .brand-text-col {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    min-width: 0;
+  }
+  .brand-name {
+    font-size: 1.25rem;
+    letter-spacing: 1.5px;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .brand-accent {
+    font-size: 1.05rem;
+  }
+  .brand-tagline {
+    font-size: 0.52rem;
+    letter-spacing: 0.8px;
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .header-right {
+    flex: 0 0 auto;
+    gap: 4px;
+  }
+  .nav-icon-btn {
+    padding: 6px 8px;
+    font-size: 1.15rem;
+  }
+  .nav-icon-btn .icon-badge {
+    top: 2px;
+    right: 2px;
+    font-size: 0.6rem;
+    min-width: 16px;
+    height: 16px;
+    line-height: 16px;
+  }
+
+  /* Professional Mobile Hero Banner */
+  .hero-section {
+    min-height: 520px;
+    height: auto;
+    display: flex;
+    align-items: flex-end;
+    padding: 0 0 20px 0;
+    position: relative;
+    background: #0d141e;
+  }
+  .hero-slide {
+    padding: 0;
+    min-height: 520px;
+    display: none;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  .hero-slide.active {
+    display: flex;
+  }
+  .hero-slide-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center top !important;
+    z-index: 1;
+  }
+  .hero-slide-bg::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70%;
+    background: linear-gradient(to top, rgba(13, 20, 30, 0.92) 0%, rgba(13, 20, 30, 0.55) 50%, rgba(13, 20, 30, 0) 100%);
+    pointer-events: none;
+  }
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    margin: 0 auto;
+    padding: 22px 18px;
+    max-width: 100%;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 12px;
+    border: 1px solid rgba(223, 183, 108, 0.5);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+    text-align: center;
+  }
+  .hero-badge {
+    margin-bottom: 8px;
+    font-size: 0.62rem;
+    padding: 4px 10px;
+    letter-spacing: 1px;
+    box-shadow: none;
   }
   .hero-heading {
-    font-size: 2.3rem;
+    font-size: 1.55rem !important;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
   }
+  .hero-subheading {
+    font-size: 0.8rem;
+    line-height: 1.45;
+    margin-bottom: 16px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .hero-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+  .hero-actions .btn-luxury-gold,
+  .hero-actions .btn-luxury-outline {
+    width: 100%;
+    padding: 11px 16px;
+    font-size: 0.78rem;
+    letter-spacing: 1px;
+    justify-content: center;
+    text-align: center;
+  }
+  .hero-nav {
+    bottom: 6px;
+  }
+
   .product-grid {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 12px;
@@ -1787,8 +1951,33 @@ img {
   }
 }
 
-/* MOBILE SCREEN (360px - 480px): GUARANTEE EXACTLY 2 CARDS PER ROW */
+/* MOBILE SCREEN (360px - 480px): COMPACT REFINEMENTS */
 @media (max-width: 480px) {
+  .hero-section {
+    min-height: 480px;
+  }
+  .hero-content {
+    padding: 16px 14px;
+    border-radius: 10px;
+  }
+  .hero-heading {
+    font-size: 1.35rem !important;
+  }
+  .brand-logo-img {
+    width: 32px;
+    height: 32px;
+  }
+  .brand-name {
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+  }
+  .brand-accent {
+    font-size: 0.92rem;
+  }
+  .brand-tagline {
+    font-size: 0.46rem;
+    letter-spacing: 0.5px;
+  }
   .container {
     padding: 0 10px !important;
   }
