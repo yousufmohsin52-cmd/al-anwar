@@ -81,7 +81,7 @@ function renderHeroCarousel() {
 
   container.innerHTML = APP_STATE.heroSlides.map((slide, idx) => `
     <div class="hero-slide ${idx === 0 ? 'active' : ''}" data-index="${idx}">
-      <div class="hero-slide-bg" style="${slide.image ? `background-image: linear-gradient(to right, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.15) 45%, rgba(0,0,0,0) 80%), url('${slide.image}'); background-size: cover; background-position: center right;` : ''}"></div>
+      <div class="hero-slide-bg" style="${slide.image ? `background-image: url('${slide.image}'); background-size: cover; background-position: center top;` : ''}"></div>
       <div class="container">
         <div class="hero-content">
           <div class="hero-badge">✨ ${slide.badge || 'EXCLUSIVE 2026'}</div>
