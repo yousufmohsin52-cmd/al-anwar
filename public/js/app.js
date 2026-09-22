@@ -81,7 +81,7 @@ function renderHeroCarousel() {
 
   container.innerHTML = APP_STATE.heroSlides.map((slide, idx) => `
     <div class="hero-slide ${idx === 0 ? 'active' : ''}" data-index="${idx}">
-      <div class="hero-slide-bg" style="${slide.image ? `background-image: linear-gradient(to right, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.75) 45%, rgba(255,255,255,0.2) 100%), url('${slide.image}'); background-size: cover; background-position: center right;` : ''}"></div>
+      <div class="hero-slide-bg" style="${slide.image ? `background-image: linear-gradient(to right, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.15) 45%, rgba(0,0,0,0) 80%), url('${slide.image}'); background-size: cover; background-position: center right;` : ''}"></div>
       <div class="container">
         <div class="hero-content">
           <div class="hero-badge">✨ ${slide.badge || 'EXCLUSIVE 2026'}</div>
@@ -89,7 +89,7 @@ function renderHeroCarousel() {
           <p class="hero-subheading">${escapeHTML(slide.subheading)}</p>
           <div class="hero-actions">
             <a href="${slide.buttonUrl || '#collection'}" class="btn-luxury-gold">${escapeHTML(slide.buttonText || 'SHOP COLLECTION')} →</a>
-            <a href="https://wa.me/${cleanPhone(APP_STATE.whatsappNumber)}?text=Assalam-o-Alaikum%20Al%20Anwar%20Cloth!%20I%20want%20to%20inquire%20about%20wholesale%20rates" target="_blank" class="btn-luxury-outline">WHOLESALE INQUIRY</a>
+            <a href="https://wa.me/${cleanPhone(APP_STATE.whatsappNumber)}?text=Assalam-o-Alaikum%20Nurah%20by%20TY%20(Al%20Anwar%20Clothes)!%20I%20want%20to%20inquire%20about%20wholesale%20rates" target="_blank" class="btn-luxury-outline">WHOLESALE INQUIRY</a>
           </div>
         </div>
       </div>
@@ -205,7 +205,7 @@ async function loadProducts() {
   try {
     const grid = document.getElementById('productGrid');
     if (grid) {
-      grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 60px 0; color: var(--text-muted); font-size: 1.1rem;">Loading Al Anwar Luxury Fabrics...</div>`;
+      grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 60px 0; color: var(--text-muted); font-size: 1.1rem;">Loading Nurah by TY Luxury Collections...</div>`;
     }
 
     let url = `/api/products?limit=60`;
@@ -489,8 +489,8 @@ window.checkoutWhatsApp = function() {
   const delivery = isFreeDelivery ? 0 : APP_STATE.deliveryFee;
   const grandTotal = subtotal + delivery;
 
-  let message = `*Assalam-o-Alaikum AL ANWAR FABRICS & CLOTH!*\n`;
-  message += `I would like to place an order from your website:\n\n`;
+  let message = `*Assalam-o-Alaikum NURAH by TY / AL ANWAR CLOTHES!*\n`;
+  message += `I would like to place an order for the following suits:\n\n`;
   message += `*ORDER ITEMS:*\n`;
 
   APP_STATE.cart.forEach((item, idx) => {
@@ -517,7 +517,7 @@ window.orderSingleProductWhatsApp = function(productId) {
   if (!product) return;
 
   const price = product.salePrice || product.retailPrice;
-  let message = `*Assalam-o-Alaikum AL ANWAR FABRICS & CLOTH!*\n\n`;
+  let message = `*Assalam-o-Alaikum NURAH by TY / AL ANWAR CLOTHES!*\n\n`;
   message += `I am interested in ordering this unstitched suit:\n`;
   message += `*Product:* ${product.name}\n`;
   message += `*SKU:* ${product.sku}\n`;

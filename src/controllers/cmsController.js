@@ -13,7 +13,8 @@ async function getPublicCMS(req, res, next) {
         announcements: FALLBACK_ANNOUNCEMENTS,
         heroSlides: FALLBACK_HERO_SLIDES,
         storeSettings: {
-          name: 'AL ANWAR FABRICS & CLOTH',
+          name: 'NURAH by TY',
+          tagline: 'Nurah by TY / Al Anwar Clothes',
           address: 'M.A. Jinnah Road, Iqbal Cloth Market, Shop # M101/1, Karachi, Pakistan',
           phone: '03363925950',
           whatsapp: '+923363925950',
@@ -58,7 +59,8 @@ async function getPublicCMS(req, res, next) {
       announcements: announcements.length > 0 ? announcements.map(a => a.text) : FALLBACK_ANNOUNCEMENTS,
       heroSlides: heroSlides.length > 0 ? heroSlides : FALLBACK_HERO_SLIDES,
       storeSettings: settingsDoc ? settingsDoc.value : {
-        name: 'AL ANWAR FABRICS & CLOTH',
+        name: 'NURAH by TY',
+        tagline: 'Nurah by TY / Al Anwar Clothes',
         address: 'M.A. Jinnah Road, Iqbal Cloth Market, Shop # M101/1, Karachi, Pakistan',
         phone: '03363925950',
         whatsapp: '+923363925950',
@@ -85,7 +87,8 @@ async function getPublicCMS(req, res, next) {
       announcements: FALLBACK_ANNOUNCEMENTS,
       heroSlides: FALLBACK_HERO_SLIDES,
       storeSettings: {
-        name: 'AL ANWAR FABRICS & CLOTH',
+        name: 'NURAH by TY',
+        tagline: 'Nurah by TY / Al Anwar Clothes',
         address: 'M.A. Jinnah Road, Iqbal Cloth Market, Shop # M101/1, Karachi, Pakistan',
         phone: '03363925950',
         whatsapp: '+923363925950',

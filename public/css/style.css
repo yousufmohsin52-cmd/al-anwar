@@ -233,31 +233,58 @@ img {
 }
 
 .brand-title {
-  font-family: var(--font-heading);
-  font-size: 2.15rem;
-  font-weight: 600;
-  letter-spacing: 4px;
-  line-height: 1;
-  text-transform: uppercase;
-  color: #111111;
-  position: relative;
-  display: inline-block;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
 }
 
-.brand-title span {
+.brand-logo-img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  border-radius: 50%;
+  box-shadow: 0 4px 16px rgba(223, 183, 108, 0.35);
+  border: 1.5px solid var(--border-gold-solid);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.brand-title:hover .brand-logo-img {
+  transform: scale(1.06) rotate(3deg);
+  box-shadow: 0 6px 20px rgba(223, 183, 108, 0.5);
+}
+
+.brand-text-col {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.brand-name {
+  font-family: var(--font-heading);
+  font-size: 1.95rem;
+  font-weight: 700;
+  letter-spacing: 3px;
   color: #111111;
-  font-weight: 300;
+  line-height: 1.05;
+}
+
+.brand-accent {
+  color: var(--color-gold-dark);
+  font-weight: 500;
+  font-style: italic;
+  font-size: 1.45rem;
 }
 
 .brand-tagline {
   display: block;
   font-family: var(--font-ui);
-  font-size: 0.62rem;
-  font-weight: 600;
-  letter-spacing: 2.5px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1.8px;
   text-transform: uppercase;
-  color: #777777;
-  margin-top: 4px;
+  color: var(--color-gold-dark);
+  margin-top: 3px;
 }
 
 .header-right {
@@ -401,16 +428,22 @@ img {
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at 75% 35%, rgba(223, 183, 108, 0.28) 0%, rgba(255, 255, 255, 0.85) 70%);
   background-size: cover;
-  background-position: center;
+  background-position: center right;
   z-index: 1;
 }
 
 .hero-content {
   position: relative;
   z-index: 2;
-  max-width: 680px;
+  max-width: 660px;
+  background: rgba(255, 255, 255, 0.76);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 38px 44px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(223, 183, 108, 0.45);
+  box-shadow: 0 16px 44px rgba(13, 20, 30, 0.09);
 }
 
 .hero-badge {

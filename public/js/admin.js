@@ -633,8 +633,8 @@ window.printInvoice = function(saleId) {
     </head>
     <body>
       <div class="header">
-        <div class="title">AL ANWAR FABRICS & CLOTH</div>
-        <div class="sub">Wholesale & Retail Unstitched Luxury Suits</div>
+        <div class="title">NURAH by TY</div>
+        <div class="sub">Nurah by TY / Al Anwar Clothes • Karachi Wholesale & Retail</div>
         <div>M.A. Jinnah Road, Iqbal Cloth Market, Shop # M101/1, Karachi</div>
         <div>WhatsApp / Phone: 03363925950 (+923363925950)</div>
       </div>
@@ -694,7 +694,7 @@ window.printInvoice = function(saleId) {
       </div>
 
       <div class="footer-note">
-        Thank you for your business with AL ANWAR FABRICS & CLOTH!<br>
+        Thank you for shopping with NURAH by TY / AL ANWAR CLOTHES!<br>
         Goods once sold can be exchanged within 7 days with original invoice.<br>
         Software generated receipt • Karachi, Pakistan
       </div>
