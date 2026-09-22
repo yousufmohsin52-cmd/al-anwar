@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <!-- Homepage -->
+  <url>
+    <loc>https://alanwarcloth.com/</loc>
+    <lastmod>2026-09-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://alanwarcloth.com/images/nurah-logo.png</image:loc>
+      <image:title>Nurah by TY / Al Anwar Clothes - Luxury Ladies Suits</image:title>
+      <image:caption>Karachi Wholesale &amp; Retail Unstitched Lawn &amp; Festive Chiffon</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Categories & Collections -->
+  <url>
+    <loc>https://alanwarcloth.com/#collection</loc>
+    <lastmod>2026-09-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://alanwarcloth.com/#unstitched-lawn</loc>
+    <lastmod>2026-09-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://alanwarcloth.com/#luxury-chiffon</loc>
+    <lastmod>2026-09-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://alanwarcloth.com/#cotton-collection</loc>
+    <lastmod>2026-09-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://alanwarcloth.com/#jacquard-zari</loc>
+    <lastmod>2026-09-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://alanwarcloth.com/#wholesale-bundles</loc>
+    <lastmod>2026-09-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <!-- Contact & Store Location -->
+  <url>
+    <loc>https://alanwarcloth.com/#contact</loc>
+    <lastmod>2026-09-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Brand Story & Karachi Wholesale Authority -->
+  <url>
+    <loc>https://alanwarcloth.com/#brand-story</loc>
+    <lastmod>2026-09-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- FAQ Section -->
+  <url>
+    <loc>https://alanwarcloth.com/#faq</loc>
+    <lastmod>2026-09-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+</urlset>

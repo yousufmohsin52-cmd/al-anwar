@@ -2110,3 +2110,206 @@ img {
     gap: 28px;
   }
 }
+
+/* ==========================================================================
+   SEO AUTHORITY, BRAND COMPARISON & FAQ ACCORDION SECTION
+   ========================================================================== */
+.seo-authority-section {
+  padding: 80px 0;
+  background: linear-gradient(180deg, #faf7f0 0%, #ffffff 100%);
+  border-top: 1px solid var(--border-gold);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.seo-lead-text {
+  max-width: 820px;
+  margin: 18px auto 0;
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: var(--text-secondary);
+}
+
+.seo-lead-text strong {
+  color: var(--text-primary);
+}
+
+.seo-pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 50px;
+  margin-bottom: 60px;
+}
+
+.seo-pillar-card {
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 32px 24px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-normal);
+}
+
+.seo-pillar-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-gold);
+}
+
+.pillar-icon {
+  font-size: 2.2rem;
+  margin-bottom: 16px;
+}
+
+.pillar-title {
+  font-family: var(--font-heading);
+  font-size: 1.35rem;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+.pillar-desc {
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: var(--text-muted);
+}
+
+/* Comparison Table */
+.seo-comparison-wrap {
+  background: #ffffff;
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-lg);
+  padding: 40px 32px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 60px;
+}
+
+.comparison-heading {
+  font-family: var(--font-heading);
+  font-size: 1.7rem;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.seo-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  font-size: 0.92rem;
+}
+
+.seo-table th,
+.seo-table td {
+  padding: 16px 20px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.seo-table th {
+  background: #faf7f0;
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  color: var(--text-primary);
+  letter-spacing: 0.5px;
+}
+
+.seo-table th.highlight-col,
+.seo-table td.highlight-col {
+  background: rgba(197, 160, 89, 0.08);
+  color: var(--color-dark-couture);
+  font-weight: 600;
+  border-left: 2px solid var(--color-gold);
+  border-right: 2px solid var(--color-gold);
+}
+
+.seo-table th.highlight-col {
+  color: var(--color-gold-dark);
+}
+
+/* FAQ Accordion */
+.seo-faq-section {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.seo-faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.seo-faq-item {
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: border-color var(--transition-fast);
+}
+
+.seo-faq-item[open] {
+  border-color: var(--color-gold);
+}
+
+.seo-faq-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 24px;
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.seo-faq-summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-toggle-icon {
+  font-size: 1.3rem;
+  color: var(--color-gold);
+  font-weight: 300;
+  transition: transform var(--transition-fast);
+}
+
+.seo-faq-item[open] .faq-toggle-icon {
+  transform: rotate(45deg);
+}
+
+.seo-faq-content {
+  padding: 0 24px 20px;
+  font-size: 0.92rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  border-top: 1px dashed var(--border-subtle);
+  padding-top: 14px;
+}
+
+@media (max-width: 991px) {
+  .seo-pillars-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .seo-comparison-wrap {
+    padding: 24px 16px;
+  }
+
+  .seo-table th,
+  .seo-table td {
+    padding: 12px 14px;
+    font-size: 0.85rem;
+  }
+}
