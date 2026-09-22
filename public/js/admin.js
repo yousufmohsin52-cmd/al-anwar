@@ -449,12 +449,14 @@ async function loadSales() {
             <td style="color:#2b8a3e;font-weight:600;">Rs. ${formatPKR(profit)}</td>
             <td><span class="badge-status ${s.paymentStatus.toLowerCase()}">${s.paymentStatus} (${s.paymentMethod})</span></td>
             <td>
-              <div style="display:flex; gap:4px;">
-                <button class="btn-erp-outline" style="padding:4px 8px;font-size:0.75rem;" onclick="printInvoice('${s._id}')">🖨️ Bill</button>
+              <div style="display:flex; gap:4px; flex-wrap:wrap;">
+                <button class="btn-erp-outline" style="padding:4px 8px;font-size:0.75rem;" onclick="printInvoice('${s._id}')" title="Print Invoice">🖨️ Bill</button>
+                <button class="btn-erp-outline" style="padding:4px 8px;font-size:0.75rem;color:var(--erp-gold);border-color:var(--erp-gold);" onclick="openEditSaleModal('${s._id}')" title="Edit sale details">✏️ Edit</button>
                 ${s.status === 'cancelled'
                   ? `<span class="badge-status out_of_stock" style="font-size:0.7rem; padding:3px 6px;">Cancelled</span>`
-                  : `<button class="btn-erp-outline" style="padding:4px 8px;font-size:0.75rem;color:#c92a2a;border-color:#c92a2a;" onclick="cancelSaleAction('${s._id}')" title="Cancel sale & restock">🚫 Cancel</button>`
+                  : `<button class="btn-erp-outline" style="padding:4px 8px;font-size:0.75rem;color:#e67700;border-color:#e67700;" onclick="cancelSaleAction('${s._id}')" title="Cancel sale & restock">🚫 Cancel</button>`
                 }
+                <button class="btn-erp-outline" style="padding:4px 8px;font-size:0.75rem;color:#c92a2a;border-color:#c92a2a;" onclick="deleteSaleAction('${s._id}', '${s.invoiceNumber}')" title="Permanently delete sale">🗑️ Delete</button>
               </div>
             </td>
           </tr>
@@ -465,6 +467,86 @@ async function loadSales() {
     console.error('Error loading sales:', err);
   }
 }
+
+window.openEditSaleModal = function(saleId) {
+  const sale = (ADMIN_STATE.sales || []).find(s => s._id === saleId);
+  if (!sale) return;
+
+  document.getElementById('editSaleId').value = sale._id;
+  document.getElementById('editSaleInvoice').textContent = `#${sale.invoiceNumber}`;
+  document.getElementById('editSaleTotal').textContent = `Rs. ${formatPKR(sale.total)}`;
+  document.getElementById('editSaleCustomerName').value = sale.customerName || '';
+  document.getElementById('editSaleCustomerPhone').value = sale.customerPhone || '';
+  document.getElementById('editSaleAddress').value = sale.customerAddress || '';
+  document.getElementById('editSalePaymentMethod').value = sale.paymentMethod || 'Cash';
+  document.getElementById('editSalePaymentStatus').value = sale.paymentStatus || 'Paid';
+  document.getElementById('editSaleAmountPaid').value = sale.amountPaid !== undefined ? sale.amountPaid : (sale.total || 0);
+  document.getElementById('editSaleNotes').value = sale.notes || '';
+
+  document.getElementById('editSaleModal').classList.add('active');
+};
+
+window.submitEditSale = async function(e) {
+  if (e) e.preventDefault();
+  const saleId = document.getElementById('editSaleId').value;
+  const customerName = document.getElementById('editSaleCustomerName').value.trim();
+  const customerPhone = document.getElementById('editSaleCustomerPhone').value.trim();
+  const customerAddress = document.getElementById('editSaleAddress').value.trim();
+  const paymentMethod = document.getElementById('editSalePaymentMethod').value;
+  const paymentStatus = document.getElementById('editSalePaymentStatus').value;
+  const amountPaid = parseFloat(document.getElementById('editSaleAmountPaid').value) || 0;
+  const notes = document.getElementById('editSaleNotes').value.trim();
+
+  try {
+    const res = await fetchAPI(`/api/sales/${saleId}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        customerName,
+        customerPhone,
+        customerAddress,
+        paymentMethod,
+        paymentStatus,
+        amountPaid,
+        notes
+      })
+    });
+
+    if (res && res.success) {
+      showToast('✓ Sale record updated successfully.', 'success');
+      closeModal('editSaleModal');
+      loadSales();
+      loadDashboardStats();
+      loadCustomers();
+    } else {
+      showToast(`Error: ${(res && res.message) || 'Failed to update sale'}`, 'error');
+    }
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+};
+
+window.deleteSaleAction = function(saleId, invoiceNumber) {
+  showConfirmDialog({
+    title: '🗑️ Delete Sale Record',
+    message: `Are you sure you want to permanently delete Sale #${invoiceNumber}? All inventory will be restored back to stock and any linked customer balance will be adjusted.`,
+    confirmText: 'Yes, Delete Sale',
+    confirmColor: '#c92a2a',
+    onConfirm: async () => {
+      const res = await fetchAPI(`/api/sales/${saleId}`, {
+        method: 'DELETE'
+      });
+      if (res && res.success) {
+        showToast(`✓ Sale #${invoiceNumber} deleted and stock restored.`, 'success');
+        loadSales();
+        loadDashboardStats();
+        loadProductsCatalog();
+        loadCustomers();
+      } else {
+        showToast(`Error: ${(res && res.message) || 'Failed to delete sale'}`, 'error');
+      }
+    }
+  });
+};
 
 window.cancelSaleAction = function(saleId) {
   showConfirmDialog({
@@ -482,6 +564,7 @@ window.cancelSaleAction = function(saleId) {
         loadSales();
         loadDashboardStats();
         loadProductsCatalog();
+        loadCustomers();
       } else {
         showToast(`Error: ${(res && res.message) || 'Failed to cancel sale'}`, 'error');
       }
@@ -942,8 +1025,12 @@ async function loadCustomers() {
             Rs. ${formatPKR(c.outstandingBalance)}
           </td>
           <td>
-            <button class="btn-erp-outline" style="padding:4px 8px;font-size:0.75rem;" onclick="viewCustomerLedger('${c._id}')">Statement</button>
-            <button class="btn-erp-gold" style="padding:4px 8px;font-size:0.75rem;" onclick="openCustomerPaymentModal('${c._id}', '${escapeHTML(c.name)}', ${c.outstandingBalance})">Receive Cash</button>
+            <div style="display:flex; gap:4px; flex-wrap:wrap;">
+              <button class="btn-erp-outline" style="padding:4px 8px;font-size:0.75rem;" onclick="viewCustomerLedger('${c._id}')">Statement</button>
+              <button class="btn-erp-gold" style="padding:4px 8px;font-size:0.75rem;" onclick="openCustomerPaymentModal('${c._id}', '${escapeHTML(c.name)}', ${c.outstandingBalance})">Receive Cash</button>
+              <button class="btn-erp-outline" style="padding:4px 8px;font-size:0.75rem;color:var(--erp-gold);border-color:var(--erp-gold);" onclick="openEditCustomerModal('${c._id}')" title="Edit Customer Khata">✏️ Edit</button>
+              <button class="btn-erp-outline" style="padding:4px 8px;font-size:0.75rem;color:#c92a2a;border-color:#c92a2a;" onclick="deleteCustomerAction('${c._id}', '${escapeHTML(c.name)}')" title="Delete Customer">🗑️ Delete</button>
+            </div>
           </td>
         </tr>
       `).join('');
@@ -952,6 +1039,91 @@ async function loadCustomers() {
     console.error('Error loading customers:', err);
   }
 }
+
+window.openEditCustomerModal = function(customerId) {
+  const customer = (ADMIN_STATE.customers || []).find(c => c._id === customerId);
+  if (!customer) return;
+
+  document.getElementById('editCustomerId').value = customer._id;
+  document.getElementById('editCustomerName').value = customer.name || '';
+  document.getElementById('editCustomerPhone').value = customer.phone || '';
+  document.getElementById('editCustomerAddress').value = customer.address || '';
+  document.getElementById('editCustomerBalance').value = customer.outstandingBalance !== undefined ? customer.outstandingBalance : 0;
+  document.getElementById('editCustomerNotes').value = customer.notes || '';
+
+  document.getElementById('editCustomerModal').classList.add('active');
+};
+
+window.submitEditCustomer = async function(e) {
+  if (e) e.preventDefault();
+  const customerId = document.getElementById('editCustomerId').value;
+  const name = document.getElementById('editCustomerName').value.trim();
+  const phone = document.getElementById('editCustomerPhone').value.trim();
+  const address = document.getElementById('editCustomerAddress').value.trim();
+  const outstandingBalance = parseFloat(document.getElementById('editCustomerBalance').value) || 0;
+  const notes = document.getElementById('editCustomerNotes').value.trim();
+
+  try {
+    const res = await fetchAPI(`/api/customers/${customerId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ name, phone, address, outstandingBalance, notes })
+    });
+
+    if (res && res.success) {
+      showToast('✓ Customer Khata updated successfully.', 'success');
+      closeModal('editCustomerModal');
+      loadCustomers();
+      loadDashboardStats();
+    } else {
+      showToast(`Error: ${(res && res.message) || 'Failed to update customer'}`, 'error');
+    }
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+};
+
+window.deleteCustomerAction = function(customerId, customerName) {
+  showConfirmDialog({
+    title: '🗑️ Delete Customer Khata',
+    message: `Are you sure you want to delete customer account for "${customerName}"? Their balance and ledger records will be removed.`,
+    confirmText: 'Yes, Delete Customer',
+    confirmColor: '#c92a2a',
+    onConfirm: async () => {
+      const res = await fetchAPI(`/api/customers/${customerId}`, {
+        method: 'DELETE'
+      });
+      if (res && res.success) {
+        showToast(`✓ Customer ${customerName} deleted.`, 'success');
+        loadCustomers();
+        loadDashboardStats();
+      } else {
+        showToast(`Error: ${(res && res.message) || 'Failed to delete customer'}`, 'error');
+      }
+    }
+  });
+};
+
+window.deleteCustomerTxnAction = function(txnId, customerId) {
+  showConfirmDialog({
+    title: '🗑️ Delete Transaction Entry',
+    message: 'Are you sure you want to remove this ledger entry? Customer balance will be recomputed automatically.',
+    confirmText: 'Yes, Delete Entry',
+    confirmColor: '#c92a2a',
+    onConfirm: async () => {
+      const res = await fetchAPI(`/api/customers/transactions/${txnId}`, {
+        method: 'DELETE'
+      });
+      if (res && res.success) {
+        showToast('✓ Ledger entry removed.', 'success');
+        viewCustomerLedger(customerId);
+        loadCustomers();
+        loadDashboardStats();
+      } else {
+        showToast(`Error: ${(res && res.message) || 'Failed to delete transaction'}`, 'error');
+      }
+    }
+  });
+};
 
 window.viewCustomerLedger = async function(customerId) {
   try {
@@ -980,6 +1152,9 @@ window.viewCustomerLedger = async function(customerId) {
         <td>${entry.debit > 0 ? `Rs. ${formatPKR(entry.debit)}` : '-'}</td>
         <td>${entry.credit > 0 ? `Rs. ${formatPKR(entry.credit)}` : '-'}</td>
         <td style="font-weight:700;">Rs. ${formatPKR(entry.balance)}</td>
+        <td>
+          ${entry.date && entry.type !== 'OPENING_BALANCE' ? `<button class="btn-erp-outline" style="padding:2px 6px;color:#c92a2a;border-color:#c92a2a;font-size:0.7rem;" onclick="deleteCustomerTxnAction('${entry.invoiceNumber ? '' : (entry._id || '')}', '${customerId}')" title="Delete entry">🗑️</button>` : '-'}
+        </td>
       </tr>
     `).join('');
 
@@ -1242,43 +1417,203 @@ async function loadReconciliation() {
     const data = await fetchAPI(url);
     if (data.success && data.summary) {
       const grid = document.getElementById('reconcileGrid');
-      if (!grid) return;
+      if (grid) {
+        grid.innerHTML = Object.values(data.summary).map(acc => `
+          <div class="kpi-card" style="border-top: 4px solid var(--erp-gold);">
+            <div class="kpi-header">
+              <span style="font-size:1.1rem;font-weight:700;">${acc.account} Account</span>
+              <span class="badge-status ${acc.discrepancy === 0 ? 'paid' : (acc.discrepancy > 0 ? 'partial' : 'unpaid')}">${acc.status}</span>
+            </div>
 
-      grid.innerHTML = Object.values(data.summary).map(acc => `
-        <div class="kpi-card" style="border-top: 4px solid var(--erp-gold);">
-          <div class="kpi-header">
-            <span style="font-size:1.1rem;font-weight:700;">${acc.account} Account</span>
-            <span class="badge-status ${acc.discrepancy === 0 ? 'paid' : (acc.discrepancy > 0 ? 'partial' : 'unpaid')}">${acc.status}</span>
-          </div>
+            <div style="font-size:0.8rem;line-height:1.8;margin-bottom:16px;">
+              <div style="display:flex;justify-content:space-between;"><span>Opening Balance:</span> <strong>Rs. ${formatPKR(acc.openingBalance)}</strong></div>
+              <div style="display:flex;justify-content:space-between;color:#2b8a3e;">
+                <span>Total Inflow (Sales + Recv + Deposits):</span> 
+                <strong>+Rs. ${formatPKR(acc.totalIn)}</strong>
+              </div>
+              ${acc.manualIn > 0 ? `<div style="display:flex;justify-content:space-between;font-size:0.75rem;color:#2b8a3e;padding-left:8px;"><span>↳ Direct Deposits:</span> <span>+Rs. ${formatPKR(acc.manualIn)}</span></div>` : ''}
+              <div style="display:flex;justify-content:space-between;color:#c92a2a;">
+                <span>Total Outflow (Expenses + Paid + Withdr):</span> 
+                <strong>-Rs. ${formatPKR(acc.totalOut)}</strong>
+              </div>
+              ${acc.manualOut > 0 ? `<div style="display:flex;justify-content:space-between;font-size:0.75rem;color:#c92a2a;padding-left:8px;"><span>↳ Direct Withdrawals:</span> <span>-Rs. ${formatPKR(acc.manualOut)}</span></div>` : ''}
+              <div style="display:flex;justify-content:space-between;border-top:1px dashed var(--erp-border);padding-top:4px;">
+                <span>Expected Closing:</span>
+                <strong>Rs. ${formatPKR(acc.expectedClosing)}</strong>
+              </div>
+            </div>
 
-          <div style="font-size:0.8rem;line-height:1.8;margin-bottom:16px;">
-            <div style="display:flex;justify-content:space-between;"><span>Opening Balance:</span> <strong>Rs. ${formatPKR(acc.openingBalance)}</strong></div>
-            <div style="display:flex;justify-content:space-between;color:#2b8a3e;"><span>Total Inflow (Sales + Due Received):</span> <strong>+Rs. ${formatPKR(acc.totalIn)}</strong></div>
-            <div style="display:flex;justify-content:space-between;color:#c92a2a;"><span>Total Outflow (Expenses + Paid):</span> <strong>-Rs. ${formatPKR(acc.totalOut)}</strong></div>
-            <div style="display:flex;justify-content:space-between;border-top:1px dashed var(--erp-border);padding-top:4px;">
-              <span>Expected Closing:</span>
-              <strong>Rs. ${formatPKR(acc.expectedClosing)}</strong>
+            <div class="form-group-erp">
+              <label>Manually Counted / Actual Balance (Rs.):</label>
+              <input type="number" class="form-control-erp" id="actualBal_${acc.account}" value="${acc.actualClosing}">
+            </div>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:0.75rem;color:${acc.discrepancy === 0 ? '#2b8a3e' : '#c92a2a'};font-weight:700;">
+                Discrepancy: Rs. ${formatPKR(acc.discrepancy)}
+              </span>
+              <button class="btn-erp-action" style="padding:6px 12px;font-size:0.75rem;" onclick="saveAccountReconciliation('${acc.account}')">Save Balance</button>
             </div>
           </div>
-
-          <div class="form-group-erp">
-            <label>Manually Counted / Actual Balance (Rs.):</label>
-            <input type="number" class="form-control-erp" id="actualBal_${acc.account}" value="${acc.actualClosing}">
-          </div>
-
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <span style="font-size:0.75rem;color:${acc.discrepancy === 0 ? '#2b8a3e' : '#c92a2a'};font-weight:700;">
-              Discrepancy: Rs. ${formatPKR(acc.discrepancy)}
-            </span>
-            <button class="btn-erp-action" style="padding:6px 12px;font-size:0.75rem;" onclick="saveAccountReconciliation('${acc.account}')">Save Balance</button>
-          </div>
-        </div>
-      `).join('');
+        `).join('');
+      }
     }
+
+    // Also load bank transaction ledger table
+    loadBankTransactions();
   } catch (err) {
     console.error('Error loading reconciliation:', err);
   }
 }
+
+async function loadBankTransactions() {
+  const tbody = document.getElementById('bankTxnTableBody');
+  if (!tbody) return;
+
+  try {
+    const accountFilter = document.getElementById('bankTxnFilterAccount') ? document.getElementById('bankTxnFilterAccount').value : 'All';
+    let url = '/api/reconciliation/transactions?limit=100';
+    if (accountFilter && accountFilter !== 'All') {
+      url += `&account=${accountFilter}`;
+    }
+
+    const data = await fetchAPI(url);
+    if (data.success && data.transactions) {
+      if (data.transactions.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--erp-muted);">No direct bank or cash transactions recorded yet. Use the buttons above to record a deposit or withdrawal.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = data.transactions.map(t => {
+        let typeBadge = '';
+        if (t.type === 'DEPOSIT' || t.type === 'TRANSFER_IN') {
+          typeBadge = `<span class="badge-status paid" style="font-size:0.72rem;">🟢 Inflow / Deposit</span>`;
+        } else if (t.type === 'WITHDRAWAL' || t.type === 'TRANSFER_OUT') {
+          typeBadge = `<span class="badge-status unpaid" style="font-size:0.72rem;">🔴 Outflow / Withdrawal</span>`;
+        } else {
+          typeBadge = `<span class="badge-status partial" style="font-size:0.72rem;">🔄 ${t.type}</span>`;
+        }
+
+        const dateStr = t.date ? new Date(t.date).toLocaleString('en-PK', { dateStyle: 'short', timeStyle: 'short' }) : '-';
+
+        return `
+          <tr>
+            <td>${dateStr}</td>
+            <td><strong>${t.account}</strong></td>
+            <td>${typeBadge}</td>
+            <td style="font-weight:700; color:${t.type === 'DEPOSIT' || t.type === 'TRANSFER_IN' ? '#2b8a3e' : '#c92a2a'};">
+              Rs. ${formatPKR(t.amount)}
+            </td>
+            <td>${escapeHTML(t.reference || '-')}</td>
+            <td>${escapeHTML(t.notes || '-')}</td>
+            <td style="font-size:0.8rem; color:var(--erp-muted);">${escapeHTML(t.recordedBy || 'admin')}</td>
+            <td>
+              <button class="btn-erp-outline" style="padding:3px 8px;font-size:0.72rem;color:#c92a2a;border-color:#c92a2a;" onclick="deleteBankTxnAction('${t._id}')" title="Delete entry">
+                🗑️
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+  } catch (err) {
+    console.error('Error loading bank transactions:', err);
+  }
+}
+
+window.openBankTxnModal = function(type = 'DEPOSIT') {
+  document.getElementById('bankTxnType').value = type;
+  handleBankTxnTypeChange(type);
+
+  // Set default date to today
+  const today = new Date().toISOString().slice(0, 10);
+  document.getElementById('bankTxnDate').value = today;
+  document.getElementById('bankTxnAmount').value = '';
+  document.getElementById('bankTxnRef').value = '';
+  document.getElementById('bankTxnNotes').value = '';
+
+  document.getElementById('bankTxnModal').classList.add('active');
+};
+
+window.handleBankTxnTypeChange = function(type) {
+  const toGroup = document.getElementById('bankTxnToAccountGroup');
+  const modalTitle = document.getElementById('bankTxnModalTitle');
+  const btn = document.getElementById('btnSubmitBankTxn');
+
+  if (type === 'TRANSFER') {
+    toGroup.style.display = 'block';
+    modalTitle.textContent = '🔄 Account-to-Account Fund Transfer';
+    btn.textContent = 'Record Transfer';
+  } else if (type === 'WITHDRAWAL') {
+    toGroup.style.display = 'none';
+    modalTitle.textContent = '🔴 Record Withdrawal / Paisa Nikala (Bank Outflow)';
+    btn.textContent = 'Record Withdrawal';
+  } else {
+    toGroup.style.display = 'none';
+    modalTitle.textContent = '🟢 Record Deposit / Paisa Aaya (Bank Inflow)';
+    btn.textContent = 'Record Deposit';
+  }
+};
+
+window.submitBankTxn = async function(e) {
+  if (e) e.preventDefault();
+  const type = document.getElementById('bankTxnType').value;
+  const account = document.getElementById('bankTxnAccount').value;
+  const toAccount = document.getElementById('bankTxnToAccount').value;
+  const amount = parseFloat(document.getElementById('bankTxnAmount').value) || 0;
+  const date = document.getElementById('bankTxnDate').value;
+  const reference = document.getElementById('bankTxnRef').value.trim();
+  const notes = document.getElementById('bankTxnNotes').value.trim();
+
+  if (amount <= 0) {
+    alert('Please enter a valid amount.');
+    return;
+  }
+
+  if (type === 'TRANSFER' && account === toAccount) {
+    alert('Source account and destination account cannot be the same for a transfer.');
+    return;
+  }
+
+  try {
+    const res = await fetchAPI('/api/reconciliation/transaction', {
+      method: 'POST',
+      body: JSON.stringify({ account, type, amount, reference, notes, date, toAccount })
+    });
+
+    if (res && res.success) {
+      showToast(`✓ ${res.message}`, 'success');
+      closeModal('bankTxnModal');
+      loadReconciliation();
+      loadDashboardStats();
+    } else {
+      showToast(`Error: ${(res && res.message) || 'Failed to record transaction'}`, 'error');
+    }
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+};
+
+window.deleteBankTxnAction = function(id) {
+  showConfirmDialog({
+    title: '🗑️ Delete Transaction',
+    message: 'Are you sure you want to delete this bank/cash entry? Reconciled balance will be adjusted.',
+    confirmText: 'Yes, Delete',
+    confirmColor: '#c92a2a',
+    onConfirm: async () => {
+      const res = await fetchAPI(`/api/reconciliation/transaction/${id}`, {
+        method: 'DELETE'
+      });
+      if (res && res.success) {
+        showToast('✓ Entry removed.', 'success');
+        loadReconciliation();
+        loadDashboardStats();
+      } else {
+        showToast(`Error: ${(res && res.message) || 'Failed to delete'}`, 'error');
+      }
+    }
+  });
+};
 
 window.saveAccountReconciliation = async function(account) {
   const actualVal = parseFloat(document.getElementById(`actualBal_${account}`).value) || 0;
@@ -1292,13 +1627,13 @@ window.saveAccountReconciliation = async function(account) {
     });
 
     if (res.success) {
-      alert(`✓ ${account} balance reconciled successfully.`);
+      showToast(`✓ ${account} balance reconciled successfully.`, 'success');
       loadReconciliation();
     } else {
-      alert(`Error: ${res.message}`);
+      showToast(`Error: ${res.message}`, 'error');
     }
   } catch (err) {
-    alert(err.message);
+    showToast(err.message, 'error');
   }
 };
 

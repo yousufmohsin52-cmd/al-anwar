@@ -414,9 +414,180 @@ async function cancelSale(req, res, next) {
   }
 }
 
+async function updateSale(req, res, next) {
+  try {
+    const { id } = req.params;
+    const db = getDb();
+    const {
+      customerName,
+      customerPhone,
+      customerAddress,
+      paymentMethod,
+      paymentStatus,
+      amountPaid,
+      notes
+    } = req.body;
+
+    const sale = await db.collection('sales').findOne({ _id: new ObjectId(id) });
+    if (!sale) {
+      return res.status(404).json({ success: false, message: 'Sale invoice not found.' });
+    }
+
+    const updates = {};
+    if (customerName !== undefined) updates.customerName = customerName;
+    if (customerPhone !== undefined) updates.customerPhone = customerPhone;
+    if (customerAddress !== undefined) updates.customerAddress = customerAddress;
+    if (paymentMethod !== undefined) updates.paymentMethod = paymentMethod;
+    if (notes !== undefined) updates.notes = notes;
+
+    const oldAmountPaid = Number(sale.amountPaid || 0);
+    const oldBalanceDue = Number(sale.balanceDue || 0);
+    let newAmountPaid = oldAmountPaid;
+    let newBalanceDue = oldBalanceDue;
+    let newPaymentStatus = sale.paymentStatus;
+
+    if (amountPaid !== undefined) {
+      newAmountPaid = Number(amountPaid) || 0;
+      newBalanceDue = Math.max(0, Number(sale.total || 0) - newAmountPaid);
+      updates.amountPaid = newAmountPaid;
+      updates.balanceDue = newBalanceDue;
+
+      if (paymentStatus) {
+        newPaymentStatus = paymentStatus;
+      } else {
+        if (newBalanceDue <= 0) newPaymentStatus = 'Paid';
+        else if (newAmountPaid > 0) newPaymentStatus = 'Partial';
+        else newPaymentStatus = 'Unpaid';
+      }
+      updates.paymentStatus = newPaymentStatus;
+
+      // Adjust customer balance if linked
+      if (sale.customerId) {
+        const balanceDiff = newBalanceDue - oldBalanceDue;
+        const paidDiff = newAmountPaid - oldAmountPaid;
+        await db.collection('customers').updateOne(
+          { _id: new ObjectId(sale.customerId) },
+          {
+            $inc: {
+              outstandingBalance: balanceDiff,
+              totalPaid: paidDiff
+            },
+            $set: { updatedAt: new Date() }
+          }
+        );
+      }
+    } else if (paymentStatus !== undefined) {
+      updates.paymentStatus = paymentStatus;
+    }
+
+    updates.updatedAt = new Date();
+    updates.updatedBy = req.user ? req.user.username : 'admin';
+
+    await db.collection('sales').updateOne(
+      { _id: new ObjectId(id) },
+      { $set: updates }
+    );
+
+    await logAudit({
+      userId: req.user ? req.user._id : null,
+      username: req.user ? req.user.username : 'admin',
+      action: 'UPDATE_SALE',
+      entity: 'sales',
+      entityId: id,
+      details: { invoiceNumber: sale.invoiceNumber, updates }
+    });
+
+    res.json({
+      success: true,
+      message: `Sale #${sale.invoiceNumber} updated successfully.`
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function deleteSale(req, res, next) {
+  try {
+    const { id } = req.params;
+    const db = getDb();
+
+    const sale = await db.collection('sales').findOne({ _id: new ObjectId(id) });
+    if (!sale) {
+      return res.status(404).json({ success: false, message: 'Sale invoice not found.' });
+    }
+
+    // 1. If sale was active, restore inventory for each item
+    if (sale.status !== 'cancelled' && Array.isArray(sale.items)) {
+      for (const item of sale.items) {
+        if (item.productId) {
+          try {
+            await recordMovement({
+              productId: item.productId,
+              movementType: 'SALE_RETURN',
+              quantity: Number(item.quantity || 0),
+              referenceType: 'SALE_DELETED',
+              referenceId: id,
+              notes: `Stock restored upon deleting Sale #${sale.invoiceNumber}`,
+              userId: req.user ? req.user._id : null
+            });
+          } catch (mErr) {
+            console.warn(`[Inventory] Could not restore product ${item.productId}:`, mErr.message);
+          }
+        }
+      }
+    }
+
+    // 2. If customer is linked, reverse customer balance & stats
+    if (sale.customerId) {
+      await db.collection('customers').updateOne(
+        { _id: new ObjectId(sale.customerId) },
+        {
+          $inc: {
+            totalPurchases: -Number(sale.total || 0),
+            totalPaid: -Number(sale.amountPaid || 0),
+            outstandingBalance: -Number(sale.balanceDue || 0)
+          },
+          $set: { updatedAt: new Date() }
+        }
+      );
+
+      // Remove customer transactions for this sale
+      await db.collection('customer_transactions').deleteMany({
+        $or: [
+          { saleId: new ObjectId(id) },
+          { saleId: id },
+          { invoiceNumber: sale.invoiceNumber }
+        ]
+      });
+    }
+
+    // 3. Delete the sale document permanently
+    await db.collection('sales').deleteOne({ _id: new ObjectId(id) });
+
+    await logAudit({
+      userId: req.user ? req.user._id : null,
+      username: req.user ? req.user.username : 'admin',
+      action: 'DELETE_SALE',
+      entity: 'sales',
+      entityId: id,
+      details: { invoiceNumber: sale.invoiceNumber, total: sale.total }
+    });
+
+    res.json({
+      success: true,
+      message: `Sale #${sale.invoiceNumber} deleted and stock restored.`
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getSales,
   getSaleById,
   createSale,
-  cancelSale
+  cancelSale,
+  updateSale,
+  deleteSale
 };
+

@@ -242,9 +242,148 @@ async function recordCustomerPayment(req, res, next) {
   }
 }
 
+async function updateCustomer(req, res, next) {
+  try {
+    const { id } = req.params;
+    const db = getDb();
+    const { name, phone, address, notes, outstandingBalance } = req.body;
+
+    const customer = await db.collection('customers').findOne({ _id: new ObjectId(id) });
+    if (!customer) {
+      return res.status(404).json({ success: false, message: 'Customer not found.' });
+    }
+
+    const updates = { updatedAt: new Date() };
+    if (name !== undefined) updates.name = name.trim();
+    if (phone !== undefined) updates.phone = phone.trim();
+    if (address !== undefined) updates.address = address.trim();
+    if (notes !== undefined) updates.notes = notes.trim();
+
+    if (outstandingBalance !== undefined) {
+      const newBal = Number(outstandingBalance) || 0;
+      const oldBal = Number(customer.outstandingBalance || 0);
+      const diff = newBal - oldBal;
+
+      updates.outstandingBalance = newBal;
+
+      if (diff !== 0) {
+        await db.collection('customer_transactions').insertOne({
+          customerId: customer._id,
+          customerName: updates.name || customer.name,
+          date: new Date(),
+          type: 'MANUAL_ADJUSTMENT',
+          debit: diff > 0 ? diff : 0,
+          credit: diff < 0 ? Math.abs(diff) : 0,
+          balanceChange: diff,
+          notes: `Khata Udhaar adjusted by Admin from Rs. ${oldBal} to Rs. ${newBal}`,
+          adjustedBy: req.user ? req.user.username : 'admin'
+        });
+      }
+    }
+
+    await db.collection('customers').updateOne(
+      { _id: new ObjectId(id) },
+      { $set: updates }
+    );
+
+    await logAudit({
+      userId: req.user ? req.user._id : null,
+      username: req.user ? req.user.username : 'admin',
+      action: 'UPDATE_CUSTOMER',
+      entity: 'customers',
+      entityId: id,
+      details: { updates }
+    });
+
+    res.json({
+      success: true,
+      message: 'Customer khata updated successfully.'
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function deleteCustomer(req, res, next) {
+  try {
+    const { id } = req.params;
+    const db = getDb();
+
+    const customer = await db.collection('customers').findOne({ _id: new ObjectId(id) });
+    if (!customer) {
+      return res.status(404).json({ success: false, message: 'Customer not found.' });
+    }
+
+    // Delete customer transactions
+    await db.collection('customer_transactions').deleteMany({
+      $or: [
+        { customerId: new ObjectId(id) },
+        { customerId: id }
+      ]
+    });
+
+    // Delete customer
+    await db.collection('customers').deleteOne({ _id: new ObjectId(id) });
+
+    await logAudit({
+      userId: req.user ? req.user._id : null,
+      username: req.user ? req.user.username : 'admin',
+      action: 'DELETE_CUSTOMER',
+      entity: 'customers',
+      entityId: id,
+      details: { customerName: customer.name, phone: customer.phone }
+    });
+
+    res.json({
+      success: true,
+      message: `Customer ${customer.name} and Khata ledger deleted.`
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function deleteCustomerTransaction(req, res, next) {
+  try {
+    const { txnId } = req.params;
+    const db = getDb();
+
+    const txn = await db.collection('customer_transactions').findOne({ _id: new ObjectId(txnId) });
+    if (!txn) {
+      return res.status(404).json({ success: false, message: 'Transaction entry not found.' });
+    }
+
+    // Revert impact on customer balance
+    // balanceChange: debit increases balance, credit decreases balance
+    const change = Number(txn.balanceChange || (Number(txn.debit || 0) - Number(txn.credit || 0)));
+    if (txn.customerId) {
+      await db.collection('customers').updateOne(
+        { _id: new ObjectId(txn.customerId) },
+        {
+          $inc: { outstandingBalance: -change },
+          $set: { updatedAt: new Date() }
+        }
+      );
+    }
+
+    await db.collection('customer_transactions').deleteOne({ _id: new ObjectId(txnId) });
+
+    res.json({
+      success: true,
+      message: 'Transaction entry deleted and customer balance adjusted.'
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getCustomers,
   getCustomerLedger,
   createCustomer,
-  recordCustomerPayment
+  recordCustomerPayment,
+  updateCustomer,
+  deleteCustomer,
+  deleteCustomerTransaction
 };
+
