@@ -57,7 +57,53 @@ app.use(async (req, res, next) => {
 
 // Static frontend files
 app.use(express.static(path.join(__dirname, '../public')));
-app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
+
+// Media serving with MongoDB Atlas & disk cache fallback
+const { getMediaFile } = require('./services/mediaService');
+
+function getPlaceholderImageSvg(label = 'AL ANWAR FABRICS') {
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#142119" />
+      <stop offset="100%" stop-color="#0a120e" />
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#dfb76c" />
+      <stop offset="100%" stop-color="#9a7b38" />
+    </linearGradient>
+  </defs>
+  <rect width="600" height="400" fill="url(#bg)" />
+  <rect x="20" y="20" width="560" height="360" fill="none" stroke="url(#gold)" stroke-width="1.5" stroke-dasharray="6,6" rx="8" />
+  <circle cx="300" cy="170" r="44" fill="rgba(223,183,108,0.12)" stroke="url(#gold)" stroke-width="1.5" />
+  <text x="300" y="180" font-family="Georgia, serif" font-size="28" fill="#dfb76c" text-anchor="middle">👗</text>
+  <text x="300" y="245" font-family="sans-serif" font-weight="600" font-size="16" fill="#f5eedc" letter-spacing="3" text-anchor="middle">${label}</text>
+  <text x="300" y="270" font-family="sans-serif" font-size="12" fill="#dfb76c" letter-spacing="1.5" text-anchor="middle">LUXURY PAKISTANI TEXTILES</text>
+</svg>`;
+}
+
+app.get('/uploads/:filename', async (req, res) => {
+  try {
+    const filename = path.basename(req.params.filename);
+    const media = await getMediaFile(filename);
+
+    if (media && media.data) {
+      res.setHeader('Content-Type', media.contentType || 'image/jpeg');
+      res.setHeader('Cache-Control', 'public, max-age=2592000, immutable');
+      return res.end(media.data);
+    }
+
+    // Graceful fallback for lost or missing historic files
+    res.setHeader('Content-Type', 'image/svg+xml');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    return res.status(200).send(getPlaceholderImageSvg('AL ANWAR CLOTH'));
+  } catch (err) {
+    console.error('Error serving upload:', err.message);
+    res.setHeader('Content-Type', 'image/svg+xml');
+    return res.status(200).send(getPlaceholderImageSvg('IMAGE UNAVAILABLE'));
+  }
+});
 
 // Mount API routes
 app.use('/api', apiRouter);
@@ -75,6 +121,11 @@ app.use((req, res) => {
   // If request begins with /api, return 404 JSON
   if (req.path.startsWith('/api')) {
     return res.status(404).json({ success: false, message: 'API endpoint not found.' });
+  }
+  // Never serve HTML for media requests
+  if (req.path.startsWith('/uploads')) {
+    res.setHeader('Content-Type', 'image/svg+xml');
+    return res.status(404).send(getPlaceholderImageSvg('NOT FOUND'));
   }
   const indexPath = path.join(__dirname, '../public/index.html');
   if (fs.existsSync(indexPath)) {

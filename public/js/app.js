@@ -81,7 +81,7 @@ function renderHeroCarousel() {
 
   container.innerHTML = APP_STATE.heroSlides.map((slide, idx) => `
     <div class="hero-slide ${idx === 0 ? 'active' : ''}" data-index="${idx}">
-      <div class="hero-slide-bg" style="${slide.image ? `background-image: linear-gradient(rgba(255,255,255,0.78), rgba(250,247,240,0.88)), url('${slide.image}'); background-size: cover; background-position: center;` : ''}"></div>
+      <div class="hero-slide-bg" style="${slide.image ? `background-image: linear-gradient(to right, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.75) 45%, rgba(255,255,255,0.2) 100%), url('${slide.image}'); background-size: cover; background-position: center right;` : ''}"></div>
       <div class="container">
         <div class="hero-content">
           <div class="hero-badge">✨ ${slide.badge || 'EXCLUSIVE 2026'}</div>
@@ -276,7 +276,7 @@ function renderProducts() {
           </button>
 
           ${(product.imageUrl || (product.images && product.images[0])) 
-            ? `<img class="product-real-img" src="${product.imageUrl || product.images[0]}" alt="${escapeHTML(product.name)}" loading="lazy">` 
+            ? `<img class="product-real-img" src="${product.imageUrl || product.images[0]}" alt="${escapeHTML(product.name)}" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'product-emoji-art\\'>${product.emojiIcon || '👗'}</div>';">` 
             : `<div class="product-emoji-art">${product.emojiIcon || '👗'}</div>`
           }
 
@@ -548,7 +548,10 @@ window.openProductQuickView = function(productId) {
 
   body.innerHTML = `
     <div class="modal-gallery">
-      <div class="modal-emoji-hero">${product.emojiIcon || '👗'}</div>
+      ${(product.imageUrl || (product.images && product.images[0]))
+        ? `<img src="${product.imageUrl || product.images[0]}" alt="${escapeHTML(product.name)}" style="width:100%; height:100%; object-fit:cover; border-radius:var(--radius-sm);" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'modal-emoji-hero\\'>${product.emojiIcon || '👗'}</div>';">`
+        : `<div class="modal-emoji-hero">${product.emojiIcon || '👗'}</div>`
+      }
     </div>
     <div class="modal-details">
       <div class="product-cat-sku">

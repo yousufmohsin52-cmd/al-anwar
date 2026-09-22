@@ -1479,18 +1479,25 @@ window.openEditHeroSlideModal = function(id) {
 };
 
 window.handleHeroImageFileSelect = function(input) {
+  const previewBox = document.getElementById('heroImagePreviewBox');
   if (input.files && input.files[0]) {
     const reader = new FileReader();
     reader.onload = function(e) {
-      document.getElementById('heroImagePreviewBox').innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover;">`;
+      if (previewBox) {
+        previewBox.innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover;">`;
+      }
     };
     reader.readAsDataURL(input.files[0]);
   }
 };
 
 window.handleHeroImageUrlInput = function(url) {
+  const previewBox = document.getElementById('heroImagePreviewBox');
+  if (!previewBox) return;
   if (url && url.trim()) {
-    document.getElementById('heroImagePreviewBox').innerHTML = `<img src="${url.trim()}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src=''; this.alt='Failed to load image';">`;
+    previewBox.innerHTML = `<img src="${url.trim()}" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null; this.parentElement.innerHTML='<span style=\\'color:#c92a2a;font-size:0.8rem;\\'>⚠️ Invalid or unreachable image link</span>';">`;
+  } else {
+    previewBox.innerHTML = '<span style="color:var(--erp-muted); font-size:0.8rem;">No custom banner image selected (Luxury gold gradient will be used)</span>';
   }
 };
 
@@ -1504,7 +1511,7 @@ window.submitHeroSlideForm = async function(e) {
 
   const btn = document.getElementById('btnSaveHeroSlide');
   btn.disabled = true;
-  btn.textContent = 'Saving...';
+  btn.textContent = isEdit ? 'Updating Banner...' : 'Saving Banner...';
 
   try {
     let res;
@@ -1526,7 +1533,12 @@ window.submitHeroSlideForm = async function(e) {
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
       });
-      res = await fetchRes.json();
+
+      try {
+        res = await fetchRes.json();
+      } catch (jsonErr) {
+        throw new Error(`Server returned HTTP ${fetchRes.status}`);
+      }
     } else {
       const payload = {
         heading: document.getElementById('heroHeading').value.trim(),
@@ -1545,15 +1557,16 @@ window.submitHeroSlideForm = async function(e) {
       });
     }
 
-    if (res.success) {
-      alert(`✓ Hero banner ${isEdit ? 'updated' : 'created'} successfully!`);
+    if (res && res.success) {
+      showToast(`✓ Hero banner ${isEdit ? 'updated' : 'created'} successfully!`, 'success');
       closeModal('heroSlideModal');
-      loadCMSHeroSlides();
+      await loadCMSHeroSlides();
     } else {
-      alert(`Error: ${res.message}`);
+      const msg = (res && res.message) || 'Failed to save hero banner.';
+      showToast(`Error: ${msg}`, 'error');
     }
   } catch (err) {
-    alert(err.message);
+    showToast(`Upload Error: ${err.message}`, 'error');
   } finally {
     btn.disabled = false;
     btn.textContent = 'Save Hero Banner';
@@ -1811,7 +1824,11 @@ window.submitProductForm = async function(e) {
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
       });
-      res = await fetchRes.json();
+      try {
+        res = await fetchRes.json();
+      } catch (jsonErr) {
+        throw new Error(`Server returned HTTP ${fetchRes.status}`);
+      }
     } else {
       const payload = {
         name: document.getElementById('prodName').value.trim(),
